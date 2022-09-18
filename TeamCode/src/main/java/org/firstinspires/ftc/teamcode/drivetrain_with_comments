@@ -1,0 +1,79 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+@TeleOp(name = "BasicTeleOp", group = "a")
+public class BasicTeleOp extends LinearOpMode {
+
+  //Defined in private so it can only be accessible in this class
+  //Variable type 'double' means it is a floating point/ decimal
+  
+   private DcMotorEx fL, fR, bL, bR;
+   private double fLPower, fRPower, bLPower, bRPower;
+
+
+   @Override
+
+   /*
+   Defines each of the motors and uses the hardware map
+   on REV Driver Hub to map each of them to correct ports
+   */
+   
+   public void runOpMode() throws InterruptedException {
+       fL = hardwareMap.get(DcMotorEx.class, "leftFront");
+       fR = hardwareMap.get(DcMotorEx.class, "rightFront");
+       bL = hardwareMap.get(DcMotorEx.class, "leftBack");
+       bR = hardwareMap.get(DcMotorEx.class, "rightBack");
+       fR.setDirection(DcMotorSimple.Direction.REVERSE);
+       bR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+       waitForStart();
+
+    // After start button is pressed 
+    
+       while(opModeIsActive()) {
+          //Defines forward/backward, strafing, and rotational movement on game pad
+           double y = -gamepad1.left_stick_y;
+           double x = gamepad1.left_stick_x * 1.1;
+           double rx = gamepad1.right_stick_x;
+           //Sets power for each of the motors on drivetrain
+           flPower = y + x - rx;
+           frPower = y - x + rx;
+           blPower = y - x - rx;
+           brPower = y + x + rx;
+
+            //Adds the absolute value of x, y and rx and has an argument of 1
+           double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+           
+            // "/=" operator is called division-plus-assignment operator
+           // It divides value of variable by value of expression
+           
+           flPower /= denominator;
+           frPower /= denominator;
+           blPower /= denominator;
+           brPower /= denominator;
+           
+            // Takes Calculations for power from previous block
+           fL.setPower(flPower);
+           fR.setPower(frPower);
+           bL.setPower(blPower);
+           bR.setPower(brPower);
+           
+           // This motor in for the Linear slide intake system
+           //NOTE: This was specifically for last seasons robot
+           DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+           // Right Trigger is used to commence intake
+           double fly = gamepad1.right_trigger;
+
+           intake.setPower(fly);
+
+       }
+       }
