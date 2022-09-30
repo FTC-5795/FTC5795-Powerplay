@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,6 +16,20 @@ public class Drivetrain extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        BNO055IMU imu;
+        BNO055IMU.Parameters gyro = new BNO055IMU.Parameters();
+        gyro.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        gyro.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //gyro.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample op mode
+        gyro.mode = BNO055IMU.SensorMode.IMU;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        imu.initialize(gyro);
+
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
+
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
         fR = hardwareMap.get(DcMotorEx.class, "rightFront");
         bL = hardwareMap.get(DcMotorEx.class, "leftRear");
