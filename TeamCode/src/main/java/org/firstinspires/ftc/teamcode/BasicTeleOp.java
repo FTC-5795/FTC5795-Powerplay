@@ -35,7 +35,6 @@ public class BasicTeleOp extends LinearOpMode {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         telemetry.addData("Mode", "calibrating...");
-        telemetry.update();
 
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
         fR = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -51,6 +50,7 @@ public class BasicTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
             telemetry.addData("turn", rx);
+            telemetry.addData("Angle", angles.thirdAngle);
             /*
             flPower = y + x - rx;
             frPower = y - x + rx;
@@ -71,9 +71,6 @@ public class BasicTeleOp extends LinearOpMode {
                 frPower = y - x + 1;
                 blPower = y - x - 1;
                 brPower = y + x + 1;
-                telemetry.update();
-                telemetry.addData("Angle", angles.secondAngle);
-                telemetry.update();
             }
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -92,6 +89,7 @@ public class BasicTeleOp extends LinearOpMode {
             double flyPower = -1 * gamepad1.right_trigger;
 
             intake.setPower(flyPower);
+            telemetry.update();
         }
 
 
