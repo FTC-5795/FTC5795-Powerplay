@@ -87,13 +87,17 @@ public class BasicTeleOp extends LinearOpMode {
                     newAngle = prevAngle - 90;
                 }
 
-                while(prevAngle != newAngle) {
                     flPower = -1;
                     frPower = 1;
                     blPower = -1;
                     brPower = 1;
-                    prevAngle = getAngle(imu);
-                }
+
+                    if(getAngle(imu) == newAngle) {
+                        flPower = 0;
+                        frPower = 0;
+                        blPower = 0;
+                        brPower = 0;
+                    }
             }
 
 //            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
