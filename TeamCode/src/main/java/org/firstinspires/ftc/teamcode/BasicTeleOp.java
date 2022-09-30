@@ -30,10 +30,6 @@ public class BasicTeleOp extends LinearOpMode {
 
         imu.initialize(gyro);
 
-        Orientation angles;
-
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
         telemetry.addData("Mode", "calibrating...");
 
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -50,7 +46,7 @@ public class BasicTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
             telemetry.addData("turn", rx);
-            telemetry.addData("Angle", angles.thirdAngle);
+            telemetry.addData("Angle", getAngle(imu));
             /*
             flPower = y + x - rx;
             frPower = y - x + rx;
@@ -93,6 +89,12 @@ public class BasicTeleOp extends LinearOpMode {
         }
 
 
+    }
+
+    private double getAngle(BNO055IMU imu) {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        return angles.thirdAngle;
     }
 
 }
