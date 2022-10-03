@@ -17,6 +17,10 @@ public class BasicTeleOp extends LinearOpMode {
     private DcMotorEx fL, fR, bL,bR;
     private double flPower, frPower, blPower, brPower;
 
+    public enum state {
+        TURN, NONE;
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -57,8 +61,13 @@ public class BasicTeleOp extends LinearOpMode {
             blPower = y - x - rx;
             brPower = y + x + rx;
 
+            boolean startTurn = false;
 
             if(leftTurn || rightTurn) {
+                startTurn = true;
+            }
+
+            if(startTurn) {
                 double prevAngle = getAngle(imu);
                 double newAngle = 0;
 
@@ -76,9 +85,11 @@ public class BasicTeleOp extends LinearOpMode {
                 } */
 
                 if (prevAngle > 180) {
-                    prevAngle = 180;
-                } else if (prevAngle < -180) {
-                    prevAngle = -180;
+                    prevAngle -= 180;
+                }
+
+                if (prevAngle < -180) {
+                    prevAngle += 180;
                 }
 
                 if (rightTurn) {
@@ -87,17 +98,45 @@ public class BasicTeleOp extends LinearOpMode {
                     newAngle = prevAngle - 90;
                 }
 
-                    flPower = -1;
-                    frPower = 1;
-                    blPower = -1;
-                    brPower = 1;
+                    telemetry.addData("Prev Angle", prevAngle);
+                    telemetry.addData("New Angle",newAngle);
 
-                    if(getAngle(imu) == newAngle) {
-                        flPower = 0;
-                        frPower = 0;
-                        blPower = 0;
-                        brPower = 0;
-                    }
+                flPower = -1;
+                frPower = 1;
+                blPower = -1;
+                brPower = 1;
+
+                double desiredAngle;
+
+                switch (state) {
+                    case NONE:
+                        if (leftTurn) {
+                            prevAngle = getAngle(imu);
+                            desiredAngle = prevAngle - 90;
+                            state = state.TURN;
+                        }
+                        if (rightTurn) {
+                            prevAngle = getAngle(imu);
+                            desiredAngle = prevAngle + 90;
+                            state = state.TURN;
+                        }
+                        break;
+
+                    case TURN:
+
+                        break;
+
+                }
+
+
+
+                    /*while(getAngle(imu) != newAngle) {
+                        flPower = -1;
+                        frPower = 1;
+                        blPower = -1;
+                        brPower = 1;
+                    } */
+                startTurn = false;
             }
 
 //            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
