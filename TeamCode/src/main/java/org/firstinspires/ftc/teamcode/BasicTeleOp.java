@@ -30,12 +30,7 @@ public class BasicTeleOp extends LinearOpMode {
 
         imu.initialize(gyro);
 
-        Orientation angles;
-
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
         telemetry.addData("Mode", "calibrating...");
-        telemetry.update();
 
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
         fR = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -50,38 +45,67 @@ public class BasicTeleOp extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
+            boolean leftTurn = gamepad1.dpad_left;
+            boolean rightTurn = gamepad1.dpad_right;
             telemetry.addData("turn", rx);
-            /*
+            telemetry.addData("Angle", getAngle(imu));
+            telemetry.addData("Y", y);
+            telemetry.addData("X", x);
+
             flPower = y + x - rx;
             frPower = y - x + rx;
             blPower = y - x - rx;
             brPower = y + x + rx;
-            */
 
-            if(rx < .5) {
-                flPower = y + x - rx;
-                frPower = y - x + rx;
-                blPower = y - x - rx;
-                brPower = y + x + rx;
 
+            if(leftTurn || rightTurn) {
+                double prevAngle = getAngle(imu);
+                double newAngle = 0;
+
+                /*
+                if(rightTurn && prevAngle > 90) {
+                    double angleCorrection = Math.abs(prevAngle - 90) * 2;
+                    newAngle = ((prevAngle * -1) + angleCorrection) - 90;
+                } else if (leftTurn && prevAngle < -90){
+                    double angleCorrection = Math.abs(prevAngle + 90) * 2;
+                    newAngle = ((prevAngle * -1) + angleCorrection) + 90;
+                } else if (rightTurn && prevAngle < 90) {
+                    newAngle = prevAngle + 90;
+                } else if (leftTurn && prevAngle > -90) {
+                    newAngle = prevAngle - 90;
+                } */
+
+                if (prevAngle > 180) {
+                    prevAngle = 180;
+                } else if (prevAngle < -180) {
+                    prevAngle = -180;
+                }
+
+                if (rightTurn) {
+                    newAngle = prevAngle + 90;
+                } else {
+                    newAngle = prevAngle - 90;
+                }
+
+                    flPower = -1;
+                    frPower = 1;
+                    blPower = -1;
+                    brPower = 1;
+
+                    if(getAngle(imu) == newAngle) {
+                        flPower = 0;
+                        frPower = 0;
+                        blPower = 0;
+                        brPower = 0;
+                    }
             }
 
-            if(rx > .5) {
-                flPower = y + x - 1;
-                frPower = y - x + 1;
-                blPower = y - x - 1;
-                brPower = y + x + 1;
-                telemetry.update();
-                telemetry.addData("Angle", angles.secondAngle);
-                telemetry.update();
-            }
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            flPower /= denominator;
-            frPower /= denominator;
-            blPower /= denominator;
-            brPower /= denominator;
-
+//            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+//            flPower /= denominator;
+//            frPower /= denominator;
+//            blPower /= denominator;
+//            brPower /= denominator;
+//
             fL.setPower(flPower);
             fR.setPower(frPower);
             bL.setPower(blPower);
@@ -92,9 +116,16 @@ public class BasicTeleOp extends LinearOpMode {
             double flyPower = -1 * gamepad1.right_trigger;
 
             intake.setPower(flyPower);
+            telemetry.update();
         }
 
 
+    }
+
+    private double getAngle(BNO055IMU imu) {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        return angles.firstAngle;
     }
 
 }
