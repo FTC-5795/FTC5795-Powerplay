@@ -17,7 +17,7 @@ public class BasicTeleOp extends LinearOpMode {
     private DcMotorEx fL, fR, bL,bR;
     private double flPower, frPower, blPower, brPower;
 
-    public enum state {
+    public enum State {
         TURN, NONE;
     }
 
@@ -101,29 +101,29 @@ public class BasicTeleOp extends LinearOpMode {
                     telemetry.addData("Prev Angle", prevAngle);
                     telemetry.addData("New Angle",newAngle);
 
-                flPower = -1;
-                frPower = 1;
-                blPower = -1;
-                brPower = 1;
+                double desiredAngle = 0;
+                State states = states.NONE;
 
-                double desiredAngle;
-
-                switch (state) {
+                switch (states) {
                     case NONE:
                         if (leftTurn) {
-                            prevAngle = getAngle(imu);
+//                            prevAngle = getAngle(imu);
                             desiredAngle = prevAngle - 90;
-                            state = state.TURN;
+                            states = states.TURN;
                         }
                         if (rightTurn) {
-                            prevAngle = getAngle(imu);
+//                            prevAngle = getAngle(imu);
                             desiredAngle = prevAngle + 90;
-                            state = state.TURN;
+                            states = states.TURN;
                         }
                         break;
 
                     case TURN:
-
+                        flPower = -1;
+                        frPower = 1;
+                        blPower = -1;
+                        brPower = 1;
+                        states = states.NONE;
                         break;
 
                 }
