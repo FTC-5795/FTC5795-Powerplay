@@ -3,9 +3,14 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+/* Deluxe TeleOp, the 5-Star Premium Supreme Elite Version
+Features included are moving (duh), drift (left bumper), and 90-degree locked rotation.
+*/
 
 @TeleOp
 
@@ -16,15 +21,16 @@ public class DeluxeTeleOp extends LinearOpMode {
     private double lockAngle, orientation, friction; //for drift physics
     private boolean positionalRotationMode; //for ninety degree turn code (boolean)
     private double targetAngle; //for ninety degree turn code (double)
-    private double integralSum, derivative, error, previousError; //for PID control (dynamic)
-    private static double Kp = 0.5; //
-    private static double Ki = 0; //
-    private static double Kd = 0.5; //
+    private double integralSum, derivative, error, previousError = 0; //for PID control (dynamic)
+    private static double Kp = 1; //Proportional Gain (for more power)
+    private static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
+    private static double Ki = 0; //Integral Gain (steady state error)
     public ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException{
 
+        //for imu initialization
         BNO055IMU imu;
         BNO055IMU.Parameters gyro = new BNO055IMU.Parameters();
         gyro.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -42,11 +48,16 @@ public class DeluxeTeleOp extends LinearOpMode {
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
         timer.reset();
 
         while (opModeIsActive()) {
-            //Dynamic variables with precision code (sqrt)
+            //Dynamic variables with precision code (sqrt) on y & x
             double y = Math.sqrt(Math.abs(-gamepad1.left_stick_y));
             double x = 1.1 * Math.sqrt(Math.abs(gamepad1.left_stick_x));
             double rx = gamepad1.right_stick_x;
@@ -57,11 +68,11 @@ public class DeluxeTeleOp extends LinearOpMode {
                 x = -x;
             }
 
-            //Orientation code 0-360 degrees
-            if (imu.getAngularOrientation().firstAngle>=0) {
+            //Orientation code 0-360 degrees (0 is forward)
+            if (imu.getAngularOrientation().firstAngle >= 0) {
                 orientation = imu.getAngularOrientation().firstAngle;
             }
-            else if (imu.getAngularOrientation().firstAngle<0) {
+            else if (imu.getAngularOrientation().firstAngle < 0) {
                 orientation = imu.getAngularOrientation().firstAngle + 360;
             }
 
@@ -89,7 +100,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             //ninety degree turn code
             if (gamepad1.dpad_left) {
                 positionalRotationMode = true;
-                if (90 > orientation && orientation >= 0) {
+                if (90 > orientation && (orientation >= 0 || orientation == 360)) {
                     targetAngle = 90; //90
                 }
                 else if (180 > orientation && orientation >= 90) {
@@ -104,32 +115,47 @@ public class DeluxeTeleOp extends LinearOpMode {
             }
             else if (gamepad1.dpad_right) {
                 positionalRotationMode = true;
-                if (90 > orientation && orientation >= 0) {
+                if (90 >= orientation && orientation > 0) {
                     targetAngle = 0; //0
                 }
-                else if (180 > orientation && orientation >= 90) {
+                else if (180 >= orientation && orientation > 90) {
                     targetAngle = 90; //90
                 }
-                else if (270 > orientation && orientation >= 180) {
+                else if (270 >= orientation && orientation > 180) {
                     targetAngle = 180; //180
                 }
-                else if (360 > orientation && orientation >= 270) {
+                else if ((orientation == 0 || 360 >= orientation) && orientation > 270) {
                     targetAngle = 270; //270
                 }
             }
 
+            //Positional Rotation System (input targetAngle)
             if (positionalRotationMode) {
-                if (!((targetAngle + 5) > orientation && orientation > (targetAngle - 5))) {
-                    fLPower = PIDControl(targetAngle, orientation);
-                    fRPower = -PIDControl(targetAngle, orientation);
-                    bLPower = PIDControl(targetAngle, orientation);
-                    bRPower = -PIDControl(targetAngle, orientation);
+                if (targetAngle - orientation > 90) {
+                    orientation += 360;
+                }
+                else if (targetAngle - orientation < -90) {
+                    orientation -= 360;
+                }
+                if (!((targetAngle + 0.5) > orientation && orientation > (targetAngle - 0.5))) { //precision control (currently +-0.5)
+                    fLPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                    fRPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                    bLPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                    bRPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
                     x = 0; //To make sure denominator code works correctly
-                    y = 0;
+                    y = 0; //To make sure denominator code works correctly
                 }
                 else {
                     positionalRotationMode = false;
                 }
+            }
+
+            //Slow mode
+            if (gamepad1.right_trigger > 0.05) {
+                fLPower /= 2;
+                fRPower /= 2;
+                bLPower /= 2;
+                bRPower /= 2;
             }
 
             //Power train calculations and motor power implementation
@@ -144,7 +170,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             bL.setPower(bLPower);
             bR.setPower(bRPower);
 
-            telemetry.addData("PID", orientation);
+            telemetry.addData("Angle", orientation);
             telemetry.update();
         }
     }
