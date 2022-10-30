@@ -35,7 +35,7 @@ public class DeluxeTeleOp extends LinearOpMode {
     private static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
     private static double Ki = 0; //Integral Gain (steady state error)
 
-    public ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -54,6 +54,7 @@ public class DeluxeTeleOp extends LinearOpMode {
         hSlideServoController hSlideServo = new hSlideServoController();
         coneServoController coneServo = new coneServoController();
         gripServoController gripServo = new gripServoController();
+        vSlideMotorController vSlideMotor = new vSlideMotorController();
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -112,11 +113,14 @@ public class DeluxeTeleOp extends LinearOpMode {
                 bRPower = y + x + rx;
             }
 
+            //ninety degree turns (method)
             ninetyDegreeController();
 
+            //function classes
             hSlideServo.runOpMode();
             coneServo.runOpMode();
             gripServo.runOpMode();
+            vSlideMotor.runOpMode();
 
             //Slow mode
             if (gamepad1.right_bumper) {

@@ -1,0 +1,17 @@
+Main Code information and updates for Powerplay Season 5795
+
+Deluxe TeleOp:
+Contains basic Mechanum functionality, drift stuff, 90 degree turns, and access to all other bot functions.
+This includes the cone servo (for fallen cones), grip servo, horizontal slide, and vertical slide.
+
+Autonomous:
+Idk, road runner
+
+Other function classes:
+    -coneServoController (only tele-Op)
+    -gripServoController (both tele-Op and auto)
+    -hSlideServoController (both tele-Op and auto)
+    -vSlideMotorController (both tele-Op and auto)
+
+NOTE- When using function classes for tele-op, use runOpMode() method in the primary while loop.
+When using function classes for autonomous, use auto[function name] method once (not in a while loop).
