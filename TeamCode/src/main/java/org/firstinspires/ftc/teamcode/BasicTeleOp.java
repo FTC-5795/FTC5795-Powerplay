@@ -102,7 +102,7 @@ public class BasicTeleOp extends LinearOpMode {
                     telemetry.addData("New Angle",newAngle);
 
                 double desiredAngle = 0;
-                State states = states.NONE;
+                State states = State.NONE;
 
                 switch (states) {
                     case NONE:
