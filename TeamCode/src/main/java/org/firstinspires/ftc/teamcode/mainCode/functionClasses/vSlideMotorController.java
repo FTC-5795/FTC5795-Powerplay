@@ -1,18 +1,17 @@
-package org.firstinspires.ftc.teamcode.mainCode;
+package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Vertical slide motor controls (Includes motion profiling and PIDF) (Be sure to start slides retracted)
-public class vSlideMotorController extends LinearOpMode {
+public class vSlideMotorController {
 
     private DcMotorEx vSlideMotor;
     private double vSlidePower, startX, startV;
@@ -21,35 +20,36 @@ public class vSlideMotorController extends LinearOpMode {
     private int targetLevel = 0;
     private boolean spamLock;
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-
+    public vSlideMotorController(HardwareMap hardwareMap) {
         vSlideMotor = hardwareMap.get(DcMotorEx.class, "vSlideMotor");
         vSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         vSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void vSlide (boolean dUP, boolean dDOWN) {
 
         double state = vSlideMotor.getCurrentPosition()/ticksPerInch;
         double velocity = vSlideMotor.getVelocity()/ticksPerInch;
 
         //targetLevel assignment
-        if (gamepad2.dpad_up && !spamLock) {
+        if (dUP && !spamLock) {
             targetLevel += 1;
             spamLock = true;
             startX = state;
             startV = velocity;
             timer.reset();
         }
-        else if (!gamepad2.dpad_up) {
+        else if (!dUP) {
             spamLock = false;
         }
-        if (gamepad2.dpad_down && !spamLock) {
+        if (dDOWN && !spamLock) {
             targetLevel -= 1;
             spamLock = true;
             startX = state;
             startV = velocity;
             timer.reset();
         }
-        else if (!gamepad2.dpad_down) {
+        else if (!dDOWN) {
             spamLock = false;
         }
 
@@ -64,6 +64,7 @@ public class vSlideMotorController extends LinearOpMode {
         vSlidePower = profileGenerator(state, target, startX, startV);
         vSlideMotor.setPower(vSlidePower);
     }
+
     public double profileGenerator(double state, double target, double startX, double startV) { //all in inches
         MotionProfile profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(startX,startV,0),
@@ -85,6 +86,7 @@ public class vSlideMotorController extends LinearOpMode {
         double correction = controller.update(state);
         return correction;
     }
+
     public double targetLevelConversion(int targetLevel) { //converts 0-3 targetLevels to inches
         if (targetLevel == 0) {
             return 0;
@@ -99,11 +101,8 @@ public class vSlideMotorController extends LinearOpMode {
             return 0;
         }
     }
-    public void autoVSlide(int targetLevel) {
 
-        vSlideMotor = hardwareMap.get(DcMotorEx.class, "vSlideMotor");
-        vSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        vSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    public void autoVSlide(int targetLevel) {
 
         double target = targetLevelConversion(targetLevel);
         double state = vSlideMotor.getCurrentPosition()/ticksPerInch;
