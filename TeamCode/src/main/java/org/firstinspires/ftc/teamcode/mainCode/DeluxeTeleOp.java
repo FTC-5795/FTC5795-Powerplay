@@ -31,8 +31,8 @@ public class DeluxeTeleOp extends LinearOpMode {
 
     //PID variables
     private double integralSum, derivative, error, previousError = 0; //for PID control (dynamic)
-    private static double Kp = 1; //Proportional Gain (for more power)
-    private static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
+    private static double Kp = 2.25; //Proportional Gain (for more power)
+    private static double Kd = 0.5; //Derivative Gain (increase to prevent overshoot)
     private static double Ki = 0; //Integral Gain (steady state error)
 
     private ElapsedTime timer = new ElapsedTime();
@@ -51,10 +51,10 @@ public class DeluxeTeleOp extends LinearOpMode {
         imu.initialize(gyro);
 
         //Servo class initializations
-        hSlideServoController hSlideServo = new hSlideServoController();
+        //hSlideServoController hSlideServo = new hSlideServoController();
         coneServoController coneServo = new coneServoController();
-        gripServoController gripServo = new gripServoController();
-        vSlideMotorController vSlideMotor = new vSlideMotorController();
+        /* gripServoController gripServo = new gripServoController();
+        vSlideMotorController vSlideMotor = new vSlideMotorController(); */
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -76,7 +76,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             //Dynamic variables with precision code (sqrt) on y & x
             y = Math.sqrt(Math.abs(-gamepad1.left_stick_y));
             x = 1.1 * Math.sqrt(Math.abs(gamepad1.left_stick_x));
-            rx = gamepad1.right_stick_x;
+            rx = -gamepad1.right_stick_x;
             if (-gamepad1.left_stick_y<0) {
                 y = -y;
             }
@@ -117,10 +117,10 @@ public class DeluxeTeleOp extends LinearOpMode {
             ninetyDegreeController();
 
             //function classes
-            hSlideServo.runOpMode();
-            coneServo.runOpMode();
-            gripServo.runOpMode();
-            vSlideMotor.runOpMode();
+            //hSlideServo.runOpMode();
+            coneServo.main();
+            /* gripServo.runOpMode();
+            vSlideMotor.runOpMode(); */
 
             //Slow mode
             if (gamepad1.right_bumper) {
@@ -143,7 +143,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             bR.setPower(bRPower);
 
             //telemetry outputs
-            telemetry.addData("hSlideServo position 0-1", null);
+            telemetry.addData("orientation", orientation);
             telemetry.update();
         }
     }
@@ -154,7 +154,6 @@ public class DeluxeTeleOp extends LinearOpMode {
         integralSum += error * timer.seconds();
         derivative = (error - previousError) / timer.seconds();
 
-        timer.reset();
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }
@@ -162,7 +161,12 @@ public class DeluxeTeleOp extends LinearOpMode {
     public void ninetyDegreeController() {
         if (gamepad1.dpad_left) {
             positionalRotationMode = true;
-            if (90 > orientation && (orientation >= 0 || orientation == 360)) {
+
+            if (orientation == 360) {
+                orientation = 0;
+            }
+
+            if (90 > orientation && orientation >= 0) {
                 targetAngle = 90; //90
             }
             else if (180 > orientation && orientation >= 90) {
@@ -177,6 +181,11 @@ public class DeluxeTeleOp extends LinearOpMode {
         }
         else if (gamepad1.dpad_right) {
             positionalRotationMode = true;
+
+            if (orientation == 0) {
+                orientation = 360;
+            }
+
             if (90 >= orientation && orientation > 0) {
                 targetAngle = 0; //0
             }
@@ -186,28 +195,34 @@ public class DeluxeTeleOp extends LinearOpMode {
             else if (270 >= orientation && orientation > 180) {
                 targetAngle = 180; //180
             }
-            else if ((orientation == 0 || 360 >= orientation) && orientation > 270) {
+            else if (360 >= orientation && orientation > 270) {
                 targetAngle = 270; //270
             }
         }
-        //Positional Rotation System (input targetAngle)
+
+        positionTracking();
+    }
+    //Positional Rotation System (input targetAngle)
+    public void positionTracking() {
+
         if (positionalRotationMode) {
-            if (targetAngle - orientation > 90) {
+            if (targetAngle - orientation > 180) {
                 orientation += 360;
             }
-            else if (targetAngle - orientation < -90) {
+            else if (targetAngle - orientation < -180) {
                 orientation -= 360;
             }
-            if (!((targetAngle + 0.5) > orientation && orientation > (targetAngle - 0.5))) { //precision control (currently +-0.5)
-                fLPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                fRPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                bLPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                bRPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+            if (!((targetAngle + 0.1) > orientation && orientation > (targetAngle - 0.1))) { //precision control (currently +-0.1)
+                fLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                fRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                bLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                bRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
                 x = 0; //for denominator code
                 y = 0; //for denominator code
             }
             else {
                 positionalRotationMode = false;
+                timer.reset();
             }
         }
     }

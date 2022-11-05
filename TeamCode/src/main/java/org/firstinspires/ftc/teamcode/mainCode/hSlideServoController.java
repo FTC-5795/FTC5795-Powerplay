@@ -1,55 +1,32 @@
 package org.firstinspires.ftc.teamcode.mainCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 
-//hSlideServo Controls (be sure to start bot with hSlide fully retracted)
+//hSlideServo Controls
 public class hSlideServoController extends LinearOpMode {
 
-    private CRServo hSlideServo;
-    private double hSlidePower, cumulativeGain = 0;
-    private double MAXGain = 100; //Max extension of slide
-    private boolean loopActive;
+    private Servo hSlideServo;
+    private double hSlidePosition;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        hSlideServo = hardwareMap.get(CRServo.class, "hSlideServo");
-        hSlidePower = gamepad2.right_trigger-gamepad1.left_trigger;
+        hSlideServo = hardwareMap.get(Servo.class, "hSlideServo");
+        hSlideServo.scaleRange(0.1,0.38);
+        double target = gamepad2.right_trigger-gamepad2.left_trigger;
+        hSlidePosition += 0.05*target;
 
-        if (gamepad2.left_bumper) {
-            hSlidePower = -1;
+        if (gamepad2.right_bumper) {
+            hSlidePosition = 1;
         }
-        else if (gamepad2.right_bumper) {
-            hSlidePower = 1;
+        else if (gamepad2.left_bumper) {
+            hSlidePosition = 0;
         }
-
-        hSlideSafety();
-        hSlideServo.setPower(hSlidePower);
+        hSlideServo.setPosition(hSlidePosition);
     }
-    public void autoHSlide(boolean slideExtend) {
-        loopActive = true;
-        while (loopActive) {
-            if (slideExtend) {
-                hSlidePower = 1;
-            }
-            else {
-                hSlidePower = -1;
-            }
-            hSlideSafety();
-            hSlideServo.setPower(hSlidePower);
-        }
-    }
-    public void hSlideSafety() {
-        cumulativeGain += hSlidePower; //from 0 to MAXGain
-        if (cumulativeGain <= 0) {
-            cumulativeGain = 0;
-            hSlidePower = 0;
-            loopActive = false;
-        }
-        else if (cumulativeGain >= MAXGain) {
-            cumulativeGain = MAXGain;
-            hSlidePower = 0;
-            loopActive = false;
-        }
+    public void autoHSlide(double position) {
+        hSlideServo = hardwareMap.get(Servo.class, "hSlideServo");
+        hSlideServo.scaleRange(0.1,0.38);
+        hSlideServo.setPosition(position);
     }
 }

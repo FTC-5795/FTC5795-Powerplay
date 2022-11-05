@@ -21,9 +21,6 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation 'org.junit.jupiter:junit-jupiter'
-    implementation 'junit:junit:4.13.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     implementation 'org.openftc:easyopencv:1.5.2'
