@@ -7,23 +7,29 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.sun.source.doctree.StartElementTree;
 
 //Vertical slide motor controls (Includes motion profiling and PIDF) (Be sure to start slides retracted)
 public class vSlideMotorController {
 
     private DcMotorEx vSlideMotor;
     private double vSlidePower, startX, startV;
-    private double ticksPerInch = 537.7/0; //ticks per revolution divided by circumference of pulley
+    private double ticksPerInch = 537.7/6.283; //ticks per revolution divided by circumference of pulley
     private ElapsedTime timer = new ElapsedTime();
     private int targetLevel = 0;
     private boolean spamLock;
+
+    private double previousError = 0, error = 0, integralSum, derivative;
+    private double Kp = 1, Kd = 0, Ki = 0;
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         vSlideMotor = hardwareMap.get(DcMotorEx.class, "vSlideMotor");
         vSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         vSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void vSlide (boolean dUP, boolean dDOWN) {
@@ -62,6 +68,7 @@ public class vSlideMotorController {
 
         double target = targetLevelConversion(targetLevel);
         vSlidePower = profileGenerator(state, target, startX, startV);
+        vSlidePower = PIDControl(target, state); //TODO: Remove to enable profile generator
         vSlideMotor.setPower(vSlidePower);
     }
 
@@ -87,18 +94,29 @@ public class vSlideMotorController {
         return correction;
     }
 
+    public double PIDControl(double target, double state) {
+        previousError = error;
+        error = target - state;
+        integralSum += error * timer.seconds();
+        derivative = (error - previousError) / timer.seconds();
+
+        double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
+        output = error;
+        return output;
+    }
+
     public double targetLevelConversion(int targetLevel) { //converts 0-3 targetLevels to inches
         if (targetLevel == 0) {
             return 0;
         }
         else if (targetLevel == 1) {
-            return 0;
+            return 14;
         }
         else if (targetLevel == 2) {
-            return 0;
+            return 24;
         }
         else {
-            return 0;
+            return 33.5;
         }
     }
 

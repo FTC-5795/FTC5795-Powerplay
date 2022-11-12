@@ -24,6 +24,9 @@ public class hSlideServoController {
         else if (lB) {
             hSlidePosition = 0;
         }
+
+        hSlidePosition = 0; //TODO: Remove to unlock horizontal slide from retracted position!
+
         hSlideServo.setPosition(hSlidePosition);
     }
 
