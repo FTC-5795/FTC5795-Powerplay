@@ -9,6 +9,7 @@ public class vSlideNoEncoderController {
 
     private DcMotorEx vSlideMotor;
     private double vSlidePower;
+    boolean hold;
 
     public vSlideNoEncoderController(HardwareMap hardwareMap) {
         vSlideMotor = hardwareMap.get(DcMotorEx.class, "vSlideMotor");
@@ -20,13 +21,20 @@ public class vSlideNoEncoderController {
         if (dUP) {
             vSlidePower = 0.8;
             vSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            hold = true;
         }
         else if (dDOWN) {
             vSlidePower = -0.8;
             vSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hold = false;
         }
         else {
-            vSlidePower = 0;
+            if (hold) {
+                vSlidePower = 0.05;
+            }
+            else {
+                vSlidePower = 0;
+            }
         }
         vSlideMotor.setPower(vSlidePower);
     }
