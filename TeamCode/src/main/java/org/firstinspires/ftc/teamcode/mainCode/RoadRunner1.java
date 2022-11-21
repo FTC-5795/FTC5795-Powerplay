@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.hSlideServoController;
+import org.firstinspires.ftc.teamcode.otherCode.archive.hSlideServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 

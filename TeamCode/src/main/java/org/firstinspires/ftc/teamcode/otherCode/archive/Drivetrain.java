@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.otherCode;
+package org.firstinspires.ftc.teamcode.otherCode.archive;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

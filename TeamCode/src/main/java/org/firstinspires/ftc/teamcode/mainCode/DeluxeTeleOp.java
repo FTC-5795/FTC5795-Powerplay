@@ -10,13 +10,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.coneServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.hSlideServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideNoEncoderController;
+
 
 /* Deluxe TeleOp, the 5-Star Premium Supreme Elite Version
 Features included are moving (duh), drift (left bumper), 90-degree locked rotation, and function classes.
-Function classes include vertical & horizontal slides, cone upright servo, and grip servo.
+Function classes include vertical slide, cone upright servo, and grip servo.
 */
 
 @TeleOp
@@ -33,7 +32,7 @@ public class DeluxeTeleOp extends LinearOpMode {
     private boolean positionalRotationMode; //for ninety degree turn code (boolean)
     private double targetAngle; //for ninety degree turn code (double)
     private double acceptableError = 2; //degrees of error accepted in turn code
-    private double practiceCoefficient = 0.5; //Adjust for practice
+    private double practiceCoefficient = 1; //Adjust for practice
 
     //PID variables
     private double integralSum, derivative, error, previousError = 0; //for PID control (dynamic)
@@ -57,11 +56,9 @@ public class DeluxeTeleOp extends LinearOpMode {
         imu.initialize(gyro);
 
         //Function class initializations
-        hSlideServoController hSlideServo = new hSlideServoController(hardwareMap);
         coneServoController coneServo = new coneServoController(hardwareMap);
         gripServoController gripServo = new gripServoController(hardwareMap);
-        //vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
-        vSlideNoEncoderController vSlideMotor = new vSlideNoEncoderController(hardwareMap); //TODO: Temporary!
+        vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -118,13 +115,15 @@ public class DeluxeTeleOp extends LinearOpMode {
             ninetyDegreeController();
 
             //function classes
-            hSlideServo.hSlide(gamepad2.right_bumper, gamepad2.left_bumper, gamepad2.right_trigger, gamepad2.left_trigger);
             coneServo.cone(gamepad2.b);
             gripServo.grip(gamepad2.a);
             vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down);
 
             //Bot Drift Issues (Not NFS Drifting)
-            bRPower *= 1.025; //2.5% multiplier on back right wheel/motor
+            fLPower *= 1; // 0%
+            bLPower *= 0.984; // -1.6%
+            bRPower *= 1.0425; // +4.25%
+            fRPower *= 0.984; // -1.6%
 
             //Power train calculations and motor power implementation
             double denominator = Math.max(Math.max(Math.max(Math.abs(fLPower), Math.abs(fRPower)), Math.max(Math.abs(bLPower), Math.abs(bRPower))), 1);
@@ -167,6 +166,7 @@ public class DeluxeTeleOp extends LinearOpMode {
         integralSum += error * timer.seconds();
         derivative = (error - previousError) / timer.seconds();
 
+        timer.reset();
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }
@@ -255,6 +255,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             else if (targetAngle - orientation < -180) {
                 orientation -= 360;
             }
+
             if (!((targetAngle + 0.25) > orientation && orientation > (targetAngle - 0.25))) { //precision control (currently +-0.25)
                 fLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
                 fRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));

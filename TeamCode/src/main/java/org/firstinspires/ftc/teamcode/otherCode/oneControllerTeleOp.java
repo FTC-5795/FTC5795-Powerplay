@@ -10,8 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.coneServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.hSlideServoController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideNoEncoderController;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 
 // Deluxe TeleOp, but one controller for testing
 
@@ -53,11 +52,9 @@ public class oneControllerTeleOp extends LinearOpMode {
         imu.initialize(gyro);
 
         //Function class initializations
-        hSlideServoController hSlideServo = new hSlideServoController(hardwareMap);
         coneServoController coneServo = new coneServoController(hardwareMap);
         gripServoController gripServo = new gripServoController(hardwareMap);
-        //vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
-        vSlideNoEncoderController vSlideMotor = new vSlideNoEncoderController(hardwareMap); //TODO: Temporary!
+        vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -114,13 +111,15 @@ public class oneControllerTeleOp extends LinearOpMode {
             ninetyDegreeController();
 
             //function classes
-            hSlideServo.hSlide(false, false, gamepad1.right_trigger, gamepad1.left_trigger);
             coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad1.a);
             vSlideMotor.vSlide(gamepad1.dpad_up, gamepad1.dpad_down);
 
             //Bot Drift Issues (Not NFS Drifting)
-            //bRPower *= 1.025;
+            fLPower *= 1;
+            bLPower *= 0.984;
+            bRPower *= 1.0425;
+            fRPower *= 0.984;
 
             //Power train calculations and motor power implementation
             double denominator = Math.max(Math.max(Math.max(Math.abs(fLPower), Math.abs(fRPower)), Math.max(Math.abs(bLPower), Math.abs(bRPower))), 1);
@@ -163,6 +162,7 @@ public class oneControllerTeleOp extends LinearOpMode {
         integralSum += error * timer.seconds();
         derivative = (error - previousError) / timer.seconds();
 
+        timer.reset();
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }

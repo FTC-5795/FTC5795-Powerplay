@@ -1,9 +1,12 @@
-package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
+package org.firstinspires.ftc.teamcode.otherCode.archive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+@Disabled
 
 public class vSlideNoEncoderController {
 
@@ -37,5 +40,6 @@ public class vSlideNoEncoderController {
             }
         }
         vSlideMotor.setPower(vSlidePower);
+
     }
 }

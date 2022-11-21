@@ -1,7 +1,10 @@
-package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
+package org.firstinspires.ftc.teamcode.otherCode.archive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+@Disabled
 
 //hSlideServo Controls
 public class hSlideServoController {
