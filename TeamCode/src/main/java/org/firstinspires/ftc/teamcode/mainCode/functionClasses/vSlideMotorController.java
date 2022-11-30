@@ -24,7 +24,7 @@ public class vSlideMotorController {
     private boolean spamLockUP, spamLockDOWN;
 
     private double previousError = 0, error = 0, integralSum, derivative;
-    private double Kp = 0.01, Kd = 0, Ki = 0;
+    private double Kp = 0.01, Kd = 0, Ki = 0; //Don't use Ki
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         vSlideMotor = hardwareMap.get(DcMotorEx.class, "vSlideMotor");
@@ -34,7 +34,7 @@ public class vSlideMotorController {
         vSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void vSlide (boolean dUP, boolean dDOWN) {
+    public void vSlide (boolean dUP, boolean dDOWN, boolean grabPosition) {
 
         double state = -vSlideMotor.getCurrentPosition();
 
@@ -55,6 +55,10 @@ public class vSlideMotorController {
         else if (!dDOWN) {
             spamLockDOWN = false;
         }
+
+        if (grabPosition) {
+            targetLevel = 1;
+        } //used to automatically set slides to grab position
 
         if (targetLevel > 4) {
             targetLevel = 4;

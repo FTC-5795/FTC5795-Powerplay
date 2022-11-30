@@ -5,16 +5,19 @@ Contains basic Mechanum functionality, drift stuff, 90 degree turns, and access 
 This includes the cone servo (for fallen cones), grip servo, and the vertical slide.
 Includes adjustments to deal with drifting issues due to motors/weight (calibrate after major changes).
 
-Deluxe Tele-Op Controls (Combined in controller one for oneControllerTeleOp):
+Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTeleOp):
     Controller 1 (Driver):
         -Left stick for movement (with sqrt precision code)
         -Right stick for turn (without sqrt precision code)
         -Left bumper hold for drift (Bot continues moving in direction originally facing when button pressed regardless of orientation)
         -Right bumper hold halves speed for precision
-        -D-Pad left/right sets bot to 90 degree locked positions relative to bot starting pose
+        -D-Pad left/right sets bot to 90 degree locked positions relative to bot starting pose //TODO: Tuning
         -B button toggles the arm for pulling cones vertical
+        -A button activates the vertical cone procedure (start with the arm side of the bot flush with cone) //TODO
+        -X button locks bots position using Odometry to make it more resistant to opponents and overshoot //TODO: Tuning
     Controller 2 (Mechanisms):
-        -D-Pad up/down moves the slides to set levels (ground, grab position, low pole, medium pole, high pole)
+        -D-Pad up/down moves the slides to set levels (ground, grab position, low pole, medium pole, high pole) //TODO: Tuning
+        -X button automatically sets slides to first position (grab position) //TODO: Tuning
         -A button toggles the cone grabber
 
 Autonomous:

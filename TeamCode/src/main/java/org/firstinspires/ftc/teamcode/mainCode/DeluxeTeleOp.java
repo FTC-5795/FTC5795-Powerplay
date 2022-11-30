@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.botLock;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.coneServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
@@ -33,9 +34,10 @@ public class DeluxeTeleOp extends LinearOpMode {
     private double targetAngle; //for ninety degree turn code (double)
     private double acceptableError = 2; //degrees of error accepted in turn code
     private double practiceCoefficient = 1; //Adjust for practice
+    private boolean spamLock1; //for botLock
 
     //PID variables
-    private double integralSum, derivative, error, previousError = 0; //for PID control (dynamic)
+    private double integralSum = 0, derivative, error = 0, previousError; //for PID control (dynamic)
     private static double Kp = 2.5; //Proportional Gain (for more power)
     private static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
     private static double Ki = 0; //Integral Gain (steady state error)
@@ -59,6 +61,7 @@ public class DeluxeTeleOp extends LinearOpMode {
         coneServoController coneServo = new coneServoController(hardwareMap);
         gripServoController gripServo = new gripServoController(hardwareMap);
         vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
+        botLock botLock = new botLock(hardwareMap);
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -117,7 +120,23 @@ public class DeluxeTeleOp extends LinearOpMode {
             //function classes
             coneServo.cone(gamepad2.b);
             gripServo.grip(gamepad2.a);
-            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down);
+            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, gamepad1.x);
+
+            //botLock class
+            if (gamepad1.x && !spamLock1) {
+                spamLock1 = true;
+                botLock.resetLock();
+            }
+            else if (gamepad1.x && spamLock1) {
+                double[] lockArray = botLock.lockBot();
+                fLPower = lockArray[1];
+                bLPower = lockArray[2];
+                bRPower = lockArray[3];
+                fRPower = lockArray[4];
+            }
+            else if (!gamepad1.x) {
+                spamLock1 = false;
+            }
 
             //Bot Drift Issues (Not NFS Drifting)
             fLPower *= 1; // 0%
@@ -266,7 +285,8 @@ public class DeluxeTeleOp extends LinearOpMode {
             }
             else {
                 positionalRotationMode = false;
-                timer.reset();
+                timer.reset(); //Prevents build up with integral PID control
+                integralSum = 0; //Prevents overlap with integral PID control
             }
         }
     }
