@@ -73,7 +73,7 @@ public class Camera_Exa extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800,600, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -105,6 +105,16 @@ public class Camera_Exa extends LinearOpMode
                         tagFound = true;
                         break;
                     }
+                }
+                //Code for trajectory
+                if(tagOfInterest == null || tagOfInterest.id == Left) {
+                    telemetry.addData("Id", "17 left");
+                }
+                else if (tagOfInterest.id == Middle) {
+                    telemetry.addData("Id", "18 middle");
+                }
+                else if (tagOfInterest.id == Right) {
+                    telemetry.addData("Id", "19 right");
                 }
 
                 if(tagFound)
@@ -144,8 +154,8 @@ public class Camera_Exa extends LinearOpMode
 
             }
 
-            telemetry.update();
             sleep(20);
+            telemetry.update();
         }
 
         /*
@@ -158,24 +168,12 @@ public class Camera_Exa extends LinearOpMode
         {
             telemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
-            telemetry.update();
         }
         else
         {
             telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
         }
 
-        //Code for trajectory
-        if(tagOfInterest == null || tagOfInterest.id == Left) {
-            //left code
-        }
-        else if (tagOfInterest.id == Middle) {
-            //middle code
-        }
-        else if (tagOfInterest.id == Right) {
-            //right code
-        }
 
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
         while (opModeIsActive()) {sleep(20);}
@@ -191,4 +189,5 @@ public class Camera_Exa extends LinearOpMode
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
+
 }
