@@ -43,6 +43,7 @@ public class DeluxeTeleOp extends LinearOpMode {
     private static double Ki = 0; //Integral Gain (steady state error)
 
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer2 = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -68,6 +69,12 @@ public class DeluxeTeleOp extends LinearOpMode {
         fR = hardwareMap.get(DcMotorEx.class, "rightFront");
         bL = hardwareMap.get(DcMotorEx.class, "leftRear");
         bR = hardwareMap.get(DcMotorEx.class, "rightRear");
+
+        fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -118,9 +125,9 @@ public class DeluxeTeleOp extends LinearOpMode {
             ninetyDegreeController();
 
             //function classes
-            coneServo.cone(gamepad2.b);
+            coneServo.cone(gamepad1.b, gamepad1.a);
             gripServo.grip(gamepad2.a);
-            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, gamepad1.x);
+            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.x);
 
             //botLock class
             if (gamepad1.x && !spamLock1) {
@@ -267,7 +274,8 @@ public class DeluxeTeleOp extends LinearOpMode {
     //Positional Rotation System (input targetAngle)
     public void positionTracking() {
 
-        if (positionalRotationMode) {
+        if (positionalRotationMode && timer2.seconds() < 2) {
+
             if (targetAngle - orientation > 180) {
                 orientation += 360;
             }
@@ -285,9 +293,13 @@ public class DeluxeTeleOp extends LinearOpMode {
             }
             else {
                 positionalRotationMode = false;
-                timer.reset(); //Prevents build up with integral PID control
-                integralSum = 0; //Prevents overlap with integral PID control
             }
+        }
+        else {
+            timer.reset(); //Prevents build up with integral PID control
+            integralSum = 0; //Prevents overlap with integral PID control
+            timer2.reset(); //Turn controller safety (2 seconds)
+            positionalRotationMode = false;
         }
     }
 }

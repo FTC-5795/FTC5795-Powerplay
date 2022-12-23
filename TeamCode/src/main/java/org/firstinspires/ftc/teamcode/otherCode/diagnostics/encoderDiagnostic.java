@@ -15,9 +15,9 @@ public class encoderDiagnostic extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        left = hardwareMap.get(DcMotorEx.class, "leftEncoder");
-        right = hardwareMap.get(DcMotorEx.class, "rightEncoder");
-        back = hardwareMap.get(DcMotorEx.class, "frontEncoder");
+        left = hardwareMap.get(DcMotorEx.class, "leftFront");
+        right = hardwareMap.get(DcMotorEx.class, "rightFront");
+        back = hardwareMap.get(DcMotorEx.class, "leftRear");
 
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

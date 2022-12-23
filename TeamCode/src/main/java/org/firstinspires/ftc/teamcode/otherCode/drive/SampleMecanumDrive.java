@@ -290,14 +290,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
 
-        double left, right;
-        left = 1;
-        right = 1;
-
-        v *= 1*left;
-        v1 *= 0.984*left;
-        v2 *= 1.0425*right;
-        v3 *= 0.984*right;
+        //Following code is responsible for motor drift issues
+        v *= 1;
+        v1 *= 0.984;
+        v2 *= 1.0425;
+        v3 *= 0.984;
 
         double driftDenom = Math.max(Math.max(Math.max(v,v1), Math.max(v2,v3)),1);
         v /= driftDenom;
