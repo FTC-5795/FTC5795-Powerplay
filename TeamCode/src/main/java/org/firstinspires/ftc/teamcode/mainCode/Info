@@ -1,5 +1,19 @@
 Main Code information and updates for Powerplay Season 5795
 
+Hardware Mapping:
+    Control Hub:
+        -Motor Port 0 | leftFront (&& leftEncoder)
+        -Motor Port 1 | rightFront (&& rightEncoder)
+        -Motor Port 2 | leftRear (&& frontEncoder)
+        -Motor Port 3 | rightRear
+        -Servo Port 0 | coneServo
+        -Servo Port 1 | gripServo
+    Expansion Hub:
+        -Motor Port 0 | lowerVerticalMotor && encoder
+        -Motor Port 1 | upperVerticalMotor && encoder
+        -MotorPort 2 | Empty
+        -Motor Port 3 | Empty
+
 Deluxe TeleOp:
 Contains basic Mechanum functionality, drift stuff, 90 degree turns, and access to all other bot functions.
 This includes the cone servo (for fallen cones), grip servo, and the vertical slide.
@@ -16,8 +30,8 @@ Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTele
         -A button activates the vertical cone procedure (start with the arm side of the bot flush with cone) //TODO
         -X button locks bots position using Odometry to make it more resistant to opponents and overshoot //TODO: Tuning
     Controller 2 (Mechanisms):
-        -D-Pad up/down moves the slides to set levels (ground, grab position, low pole, medium pole, high pole) //TODO: Tuning
-        -X button automatically sets slides to first position (grab position) //TODO: Tuning
+        -D-Pad up/down moves the slides to set levels (ground, grab position, low pole, medium pole, high pole)
+        -X button automatically sets slides to first position (grab position)
         -A button toggles the cone grabber
 
 Autonomous:

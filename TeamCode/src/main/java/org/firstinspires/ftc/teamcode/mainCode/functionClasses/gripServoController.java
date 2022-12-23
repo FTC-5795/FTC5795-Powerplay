@@ -11,7 +11,7 @@ public class gripServoController {
 
     public gripServoController(HardwareMap hardwareMap) {
         gripServo = hardwareMap.get(Servo.class, "gripServo");
-        gripServo.setPosition(0.7);
+        gripServo.setPosition(0.75);
     }
 
     public void grip(boolean button) {
@@ -29,10 +29,10 @@ public class gripServoController {
     public void toggle() {
 
         if (armDown) {
-            gripServo.setPosition(0.82);
+            gripServo.setPosition(0.875);
         }
         else {
-            gripServo.setPosition(0.7);
+            gripServo.setPosition(0.75);
         }
     }
 

@@ -21,9 +21,9 @@ public class botLock {
     private double Kp = 0, Kd = 0, Ki = 0; //PID stuff
 
     public botLock(HardwareMap hardwareMap) {
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "leftEncoder");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "rightEncoder");
-        frontEncoder = hardwareMap.get(DcMotorEx.class, "frontEncoder");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "rightFront");
+        frontEncoder = hardwareMap.get(DcMotorEx.class, "leftRear");
     }
 
     public void resetLock() {
