@@ -21,6 +21,7 @@
 
 package org.firstinspires.ftc.teamcode.OpenCV;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -30,6 +31,16 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
 
 import java.util.ArrayList;
 
@@ -82,9 +93,53 @@ public class Camera_Exa extends LinearOpMode
 
             }
         });
+        //this bs makes the drive function work for...idk some reason, don't touch it
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         telemetry.setMsTransmissionInterval(50);
 
+        //defines the sequences and loads them in before start
+        TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(35, 61.5, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                .waitSeconds(.5)
+                .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                .waitSeconds(.5)
+                .back(7)
+                .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                .waitSeconds(.5)
+                .lineToSplineHeading(new Pose2d(-14,12, Math.toRadians(270)))
+                .back(24)
+                .build();
+
+        TrajectorySequence Right2 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                .waitSeconds(.5)
+                .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                .waitSeconds(.5)
+                .back(7)
+                .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                .waitSeconds(.5)
+                .lineToSplineHeading(new Pose2d(-33,12, Math.toRadians(270)))
+                .back(24)
+                .build();
+
+        TrajectorySequence Right3 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                .waitSeconds(.5)
+                .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                .waitSeconds(.5)
+                .back(7)
+                .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                .waitSeconds(.5)
+                .lineToSplineHeading(new Pose2d(-58,12, Math.toRadians(270)))
+                .back(24)
+                .build();
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
@@ -106,16 +161,63 @@ public class Camera_Exa extends LinearOpMode
                         break;
                     }
                 }
+
                 //Code for trajectory
                 if(tagOfInterest == null || tagOfInterest.id == Left) {
-                    telemetry.addData("Id", "17 left");
+                    drive.followTrajectorySequence(Right1);
+                    sleep(2000);
+                    drive.followTrajectorySequence(
+                            drive.trajectorySequenceBuilder(Right1.end())
+                                    .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                                    .waitSeconds(.5)
+                                    .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                                    .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                                    .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                                    .waitSeconds(.5)
+                                    .back(7)
+                                    .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                                    .waitSeconds(.5)
+                                    .lineToSplineHeading(new Pose2d(-14,12, Math.toRadians(270)))
+                                    .back(24)
+                                    .build()
+                    );
                 }
                 else if (tagOfInterest.id == Middle) {
-                    telemetry.addData("Id", "18 middle");
-                }
+                    drive.followTrajectorySequence(Right2);
+                    sleep(2000);
+                    drive.followTrajectorySequence(
+                            drive.trajectorySequenceBuilder(Right2.end())
+                                    .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                                    .waitSeconds(.5)
+                                    .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                                    .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                                    .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                                    .waitSeconds(.5)
+                                    .back(7)
+                                    .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                                    .waitSeconds(.5)
+                                    .lineToSplineHeading(new Pose2d(-33,12, Math.toRadians(270)))
+                                    .back(24)
+                                    .build()
+                    );                }
                 else if (tagOfInterest.id == Right) {
-                    telemetry.addData("Id", "19 right");
-                }
+                    drive.followTrajectorySequence(Right3);
+                    sleep(2000);
+                    drive.followTrajectorySequence(
+                            drive.trajectorySequenceBuilder(Right3.end())
+                                    .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
+                                    .waitSeconds(.5)
+                                    .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
+                                    .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
+                                    .splineToConstantHeading(new Vector2d(-50, 12), Math.toRadians(180))
+                                    .waitSeconds(.5)
+                                    .back(7)
+                                    .lineToSplineHeading(new Pose2d(-24,12, Math.toRadians(270)))
+                                    .waitSeconds(.5)
+                                    .lineToSplineHeading(new Pose2d(-58,12, Math.toRadians(270)))
+                                    .back(24)
+                                    .build()
+                    );                }
 
                 if(tagFound)
                 {
