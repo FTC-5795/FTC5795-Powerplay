@@ -26,6 +26,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -44,11 +46,14 @@ import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySeq
 
 import java.util.ArrayList;
 
-@TeleOp
+@Autonomous
 public class Camera_Exa extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
+    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
+    gripServoController Grab = new gripServoController(hardwareMap);
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -161,6 +166,10 @@ public class Camera_Exa extends LinearOpMode
                         break;
                     }
                 }
+
+                // SlideLevel.autoVSlide(4);
+                // SlideLevel.autoVSlide(1);
+                // Grip.autoGrip(true);
 
                 //Code for trajectory
                 if(tagOfInterest == null || tagOfInterest.id == Left) {
