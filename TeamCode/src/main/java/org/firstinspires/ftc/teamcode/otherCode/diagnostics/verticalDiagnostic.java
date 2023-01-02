@@ -6,11 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp
 public class verticalDiagnostic extends LinearOpMode {
 
     private DcMotorEx lowerVerticalMotor, upperVerticalMotor;
+    private DistanceSensor distanceSensor;
     private double vSlidePower;
     boolean lower, upper;
 
@@ -27,6 +31,8 @@ public class verticalDiagnostic extends LinearOpMode {
         upperVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
 
         waitForStart();
 
@@ -69,6 +75,7 @@ public class verticalDiagnostic extends LinearOpMode {
                 upperVerticalMotor.setPower(0);
             }
 
+            telemetry.addData("sensorPosition in MM", distanceSensor.getDistance(DistanceUnit.MM));
             telemetry.addData("lowerPosition", lowerVerticalMotor.getCurrentPosition());
             telemetry.addData("upperPosition", upperVerticalMotor.getCurrentPosition());
             telemetry.update();

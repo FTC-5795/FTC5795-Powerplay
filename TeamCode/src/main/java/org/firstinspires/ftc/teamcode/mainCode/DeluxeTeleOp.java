@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorContro
 
 /* Deluxe TeleOp, the 5-Star Premium Supreme Elite Version
 Features included are moving (duh), drift (left bumper), 90-degree locked rotation, and function classes.
-Function classes include vertical slide, cone upright servo, and grip servo.
+Function classes include vertical slide, cone upright servo, grip servo, and botLock.
 */
 
 @TeleOp
@@ -35,6 +35,8 @@ public class DeluxeTeleOp extends LinearOpMode {
     private double acceptableError = 2; //degrees of error accepted in turn code
     private double practiceCoefficient = 1; //Adjust for practice
     private boolean spamLock1; //for botLock
+    private int levelIndicator; //for vSlideController
+    private boolean slideReset; //for vSlideController
 
     //PID variables
     private double integralSum = 0, derivative, error = 0, previousError; //for PID control (dynamic)
@@ -124,10 +126,14 @@ public class DeluxeTeleOp extends LinearOpMode {
             //ninety degree turns (method)
             ninetyDegreeController();
 
+            //vertical slide methods
+            levelIndicator();
+            slideReset();
+
             //function classes
             coneServo.cone(gamepad1.b, gamepad1.a);
-            gripServo.grip(gamepad2.a);
-            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.x);
+            gripServo.grip(gamepad2.left_bumper);
+            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, levelIndicator, slideReset);
 
             //botLock class
             if (gamepad1.x && !spamLock1) {
@@ -300,6 +306,36 @@ public class DeluxeTeleOp extends LinearOpMode {
             integralSum = 0; //Prevents overlap with integral PID control
             timer2.reset(); //Turn controller safety (2 seconds)
             positionalRotationMode = false;
+        }
+    }
+
+    //Vertical Slide Level Indicator
+    public void levelIndicator() {
+        if (gamepad2.right_bumper) {
+            levelIndicator = 9;
+        }
+        else if (gamepad2.y) {
+            levelIndicator = 7;
+        }
+        else if (gamepad2.x) {
+            levelIndicator = 5;
+        }
+        else if (gamepad2.b) {
+            levelIndicator = 3;
+        }
+        else if (gamepad2.a) {
+            levelIndicator = 1;
+        }
+        else {
+            levelIndicator = 0;
+        }
+    }
+    public void slideReset() {
+        if (gamepad2.left_trigger > 0.5 && gamepad2.right_trigger > 0.5) {
+            slideReset = true;
+        }
+        else {
+            slideReset = false;
         }
     }
 }

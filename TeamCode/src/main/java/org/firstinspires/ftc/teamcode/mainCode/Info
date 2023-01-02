@@ -29,19 +29,28 @@ Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTele
         -B button toggles the arm for pulling cones vertical
         -A button activates the vertical cone procedure (start with the arm side of the bot flush with cone) //TODO
         -X button locks bots position using Odometry to make it more resistant to opponents and overshoot //TODO: Tuning
-    Controller 2 (Mechanisms):
-        -D-Pad up/down moves the slides to set levels (ground, grab position, low pole, medium pole, high pole)
-        -X button automatically sets slides to first position (grab position)
-        -A button toggles the cone grabber
+    Controller 2 (Slides):
+        -D-Pad down moves slides down when at scoring heights (10-12) and "up" grab positions (1,3,5,7,9)
+        -D-Pad up moves slides up when at scoring heights (10-12) and sets slides to low pole (10) otherwise
+        -Right bumper sets slides to "up" grab position (9) preparing for a 5-stack of cones
+        -Y button sets slides to "up" grab position (7) preparing for a 4-stack of cones
+        -X button sets slides to "up" grab position (5) preparing for a 3-stack of cones
+        -B button sets slides to "up" grab position (3) preparing for a 2-stack of cones
+        -A button sets slides to "up" grab position (1) preparing for a 1-stack of cones
+        -Left bumper toggles the grip servo
+        -Left and Right Trigger combined reset the slides (overrides to level 0 as well)
 
 Autonomous:
--Road Runner Odometry needs to be tuned
--Some trajectories have been developed
+    Odometry:
+    -All functions tuned with three dead wheel tracking
+    Roadrunner:
+    -TODO: In Progress
 
 Other function classes:
     -coneServoController (only tele-Op)
+    -botLock (only tele-Op) //TODO: Tuning
     -gripServoController (both tele-Op and auto)
-    -vSlideMotorController (both tele-Op and auto)
+    -vSlideMotorController (both tele-Op and auto) //TODO: Tuning
 
 NOTE- When using function classes for tele-op, use runOpMode() method in the primary while loop.
 When using function classes for autonomous, use auto[function name] method once (not in a while loop).

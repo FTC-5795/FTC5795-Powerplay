@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Vertical slide motor controls (Using PID) (Start slides retracted with tension on both motors)
 //Spool diameter: 2" | PPR: 134.4
+//8 target levels (0,2,4,6,8 = grabPositions (down) | 1,3,5,7,9 = grabPositions (up) | 10-12 = scoring heights)
 public class vSlideMotorController {
 
     private DcMotorEx lowerVerticalMotor, upperVerticalMotor;
@@ -15,9 +16,12 @@ public class vSlideMotorController {
     private ElapsedTime lowerTimer = new ElapsedTime();
     private ElapsedTime upperTimer = new ElapsedTime();
     private ElapsedTime autoTimer = new ElapsedTime();
-    private int targetLevel = 0;
+    private int targetLevel = 0; //0 is the reset level
     private boolean spamLockUP, spamLockDOWN;
+    private boolean autoReset = true; //Enable to auto reset slides at targetLevel 0 (ground)
+    private double calibrationRegion = 100; //allowable region (height in ticks) to reset slides
 
+    //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
@@ -37,14 +41,24 @@ public class vSlideMotorController {
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    public void vSlide (boolean dUP, boolean dDOWN, boolean grabPosition) {
+    public void vSlide (boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset) {
 
         double state1 = lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
 
         //targetLevel assignment
+
+        if (grabPosition > 0) {
+            targetLevel = grabPosition;
+        }
+
         if (dUP && !spamLockUP) {
-            targetLevel += 1;
+            if (targetLevel < 10) {
+                targetLevel = 10;
+            }
+            else if (targetLevel < 12) {
+                targetLevel += 1;
+            }
             spamLockUP = true;
             lowerTimer.reset();
             upperTimer.reset();
@@ -53,7 +67,12 @@ public class vSlideMotorController {
             spamLockUP = false;
         }
         if (dDOWN && !spamLockDOWN) {
-            targetLevel -= 1;
+            if (targetLevel < 10 && targetLevel % 2 == 1) {
+                targetLevel -= 1;
+            }
+            else if (targetLevel > 10) {
+                targetLevel -= 1;
+            }
             spamLockDOWN = true;
             lowerTimer.reset();
             upperTimer.reset();
@@ -62,19 +81,15 @@ public class vSlideMotorController {
             spamLockDOWN = false;
         }
 
-        //used to automatically set slides to grab position
-        if (grabPosition) {
-            targetLevel = 1;
+        //Slide reset controls
+        if (targetLevel == 0 && autoReset == true) {
+            slideReset = true;
+        }
+        if (slideReset) {
+            slideReset();
         }
 
-        if (targetLevel > 4) {
-            targetLevel = 4;
-        }
-        else if (targetLevel < 0) {
-            targetLevel = 0;
-        }
-
-        double target = targetLevelConversion(targetLevel);
+        double target = targetLevelConversion(targetLevel); //converts to encoder tick value
         lowerVerticalPower = PIDControl1(target, state1);
         upperVerticalPower = PIDControl2(target, state2);
         lowerVerticalMotor.setPower(lowerVerticalPower);
@@ -91,11 +106,9 @@ public class vSlideMotorController {
         lowerTimer.reset();
         double output = (error1 * Kp) + (derivative1 * Kd) + (integralSum1 * Ki);
 
-
         if (error1 < acceptableError && error1 > -acceptableError) {
             output = 0; //allowing error saves battery power
         }
-
 
         return output;
     }
@@ -109,30 +122,58 @@ public class vSlideMotorController {
         upperTimer.reset();
         double output = (error1 * Kp) + (derivative1 * Kd) + (integralSum1 * Ki);
 
-
         if (error1 < acceptableError && error1 > -acceptableError) {
             output = 0; //allowing error saves battery power
         }
-
 
         return output;
     }
     public double targetLevelConversion(int targetLevel) { //converts 0-3 targetLevels to inches
         if (targetLevel == 0) {
             return 35; //safety +35
-        } //ground level
+        } //stack of 1 (down) | ground/reset level
         else if (targetLevel == 1) {
             return 350;
-        } //grab position level
+        } //stack of 1 (up)
         else if (targetLevel == 2) {
-            return 1650;
-        } //low pole level
+
+        } //stack of 2 (down)
         else if (targetLevel == 3) {
-            return 2650;
-        } //medium pole level
-        else {
-            return 3550;
-        } //tall pole level
+
+        } //stack of 2 (up)
+        else if (targetLevel == 4) {
+
+        } //stack of 3 (down)
+        else if (targetLevel == 5) {
+
+        } //stack of 3 (up)
+        else if (targetLevel == 6) {
+
+        } //stack of 4 (down)
+        else if (targetLevel == 7) {
+
+        } //stack of 4 (up)
+        else if (targetLevel == 8) {
+
+        } //stack of 5 (down)
+        else if (targetLevel == 9) {
+        } //stack of 5 (up)
+        else if (targetLevel == 10) {
+            return 1625;
+        } //small pole
+        else if (targetLevel == 11) {
+            return 2625;
+        } //medium pole
+        else if (targetLevel == 12) {
+            return 3525;
+        } //tall pole
+
+        return 0; //for resetting slides
+    }
+
+    //resets motor encoders using distance sensor
+    public void slideReset() {
+
     }
 
     public void autoVSlide(int targetLevel) {
