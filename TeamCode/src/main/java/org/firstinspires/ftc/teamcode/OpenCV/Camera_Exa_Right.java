@@ -23,7 +23,6 @@ package org.firstinspires.ftc.teamcode.OpenCV;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
@@ -32,14 +31,9 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
@@ -47,8 +41,8 @@ import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySeq
 import java.util.ArrayList;
 
 @Autonomous
-public class Camera_Exa extends LinearOpMode
-{
+public class Camera_Exa_Right extends LinearOpMode {
+
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -83,6 +77,9 @@ public class Camera_Exa extends LinearOpMode
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
+//        SlideLevel.autoVSlide(0-12);
+//        Grab.autoGrip(TRUE/FALSE);
+
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -104,7 +101,10 @@ public class Camera_Exa extends LinearOpMode
         telemetry.setMsTransmissionInterval(50);
 
         //defines the sequences and loads them in before start
-        TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(35, 61.5, Math.toRadians(270)))
+
+        drive.setPoseEstimate(new Pose2d(-35, 61.5, 270));
+
+        TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
                 .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
                 .waitSeconds(.5)
                 .splineToConstantHeading(new Vector2d(-25, 12), Math.toRadians(180))
@@ -145,6 +145,9 @@ public class Camera_Exa extends LinearOpMode
                 .lineToSplineHeading(new Pose2d(-58,12, Math.toRadians(270)))
                 .back(24)
                 .build();
+
+                Grab.autoGrip(true);
+
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
