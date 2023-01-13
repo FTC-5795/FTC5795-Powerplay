@@ -17,6 +17,8 @@ public class vSlideMotorController {
     private ElapsedTime upperTimer = new ElapsedTime();
     private ElapsedTime autoTimer = new ElapsedTime();
     private int targetLevel = 0; //0 is the reset level
+    private int previousTargetLevel = 0; //previous targetLevel
+    private double target = 0; //target height of slides in ticks
     private boolean spamLockUP, spamLockDOWN;
     private boolean autoReset = true; //Enable to auto reset slides at targetLevel 0 (ground)
     private double calibrationRegion = 100; //allowable region (height in ticks) to reset slides
@@ -25,7 +27,7 @@ public class vSlideMotorController {
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
-    private double acceptableError = 20; //Ticks of acceptableError +/- in slide positions
+    private double acceptableError = 35; //Ticks of acceptableError +/- in slide positions
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
@@ -41,10 +43,11 @@ public class vSlideMotorController {
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    public void vSlide (boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset) {
+    public void vSlide (boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
 
         double state1 = lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
+        previousTargetLevel = targetLevel;
 
         //targetLevel assignment
 
@@ -89,7 +92,23 @@ public class vSlideMotorController {
             slideReset();
         }
 
-        double target = targetLevelConversion(targetLevel); //converts to encoder tick value
+        //slide adjustment safety controls
+        if (targetLevel != previousTargetLevel) {
+            target = targetLevelConversion(previousTargetLevel);
+            while (state1 > target+acceptableError || state1 < target-acceptableError || state2 > target+acceptableError || state2 < target-acceptableError ) {
+                state1 = lowerVerticalMotor.getCurrentPosition();
+                state2 = upperVerticalMotor.getCurrentPosition();
+                lowerVerticalPower = PIDControl1(target, state1);
+                upperVerticalPower = PIDControl2(target, state2);
+            }
+            positionalAdjustmentProfile(true, 0, 0); //resets manual positioning of slides
+        }
+
+        target = targetLevelConversion(targetLevel); //converts to encoder tick value
+
+        //Manual adjustment to slide height using triggers
+        positionalAdjustmentProfile(false, tDOWN, tUP); //holds prior trigger values
+
         lowerVerticalPower = PIDControl1(target, state1);
         upperVerticalPower = PIDControl2(target, state2);
         lowerVerticalMotor.setPower(lowerVerticalPower);
@@ -133,33 +152,34 @@ public class vSlideMotorController {
             return 35; //safety +35
         } //stack of 1 (down) | ground/reset level
         else if (targetLevel == 1) {
-            return 350;
+            return 300;
         } //stack of 1 (up)
         else if (targetLevel == 2) {
-
+            return 150;
         } //stack of 2 (down)
         else if (targetLevel == 3) {
-
+            return 450;
         } //stack of 2 (up)
         else if (targetLevel == 4) {
-
+            return 275;
         } //stack of 3 (down)
         else if (targetLevel == 5) {
-
+            return 580;
         } //stack of 3 (up)
         else if (targetLevel == 6) {
-
+            return 435;
         } //stack of 4 (down)
         else if (targetLevel == 7) {
-
+            return 690;
         } //stack of 4 (up)
         else if (targetLevel == 8) {
-
+            return 560;
         } //stack of 5 (down)
         else if (targetLevel == 9) {
+            return 820;
         } //stack of 5 (up)
         else if (targetLevel == 10) {
-            return 1625;
+            return 1650;
         } //small pole
         else if (targetLevel == 11) {
             return 2625;
@@ -171,29 +191,36 @@ public class vSlideMotorController {
         return 0; //for resetting slides
     }
 
-    //resets motor encoders using distance sensor
+    //resets motor encoders using color/distance sensor
     public void slideReset() {
 
     }
 
-    public void autoVSlide(int targetLevel) {
-
-        //0 is ground, 1 is grab height, 2 is low pole, 3 is medium pole, 4 is tall pole
-
-        double target = targetLevelConversion(targetLevel);
-        autoTimer.reset();
-
-        while (autoTimer.seconds() < 2) {
-            double state1 = lowerVerticalMotor.getCurrentPosition();
-            double state2 = upperVerticalMotor.getCurrentPosition();
-            lowerVerticalPower = PIDControl1(target, state1);
-            upperVerticalPower = PIDControl2(target, state2);
-            lowerVerticalMotor.setPower(lowerVerticalPower);
-            upperVerticalMotor.setPower(upperVerticalPower);
-        } //Runs for 2 seconds (time to allow slides to stabilize)
+    public void positionalAdjustmentProfile(boolean reset, double tDOWN, double tUP) {
+        double adjustmentFactor = 1 * (tUP - tDOWN);
+        if (reset) {
+            adjustmentFactor = 0;
+        }
+        target += adjustmentFactor;
     }
 
-    //For emergency use only
+    public void autoVSlide(int targetLevel) {
+
+        //slide heights explained on info page
+
+        double target = targetLevelConversion(targetLevel);
+        double state1 = lowerVerticalMotor.getCurrentPosition();
+        double state2 = upperVerticalMotor.getCurrentPosition();
+
+        while (state1 > target+acceptableError || state1 < target-acceptableError || state2 > target+acceptableError || state2 < target-acceptableError ) {
+            state1 = lowerVerticalMotor.getCurrentPosition();
+            state2 = upperVerticalMotor.getCurrentPosition();
+            lowerVerticalPower = PIDControl1(target, state1);
+            upperVerticalPower = PIDControl2(target, state2);
+        }
+    }
+
+    //For back up use only
     public void vSlideBackUp (boolean dUP, boolean dDOWN, boolean grabPosition) {
 
         if (dUP) {

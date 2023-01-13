@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.otherCode.diagnostics;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,6 +16,7 @@ public class verticalDiagnostic extends LinearOpMode {
 
     private DcMotorEx lowerVerticalMotor, upperVerticalMotor;
     private DistanceSensor distanceSensor;
+    private ColorSensor colorSensor;
     private double vSlidePower;
     boolean lower, upper;
 
@@ -32,7 +34,8 @@ public class verticalDiagnostic extends LinearOpMode {
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "sensor");
 
         waitForStart();
 
@@ -75,7 +78,11 @@ public class verticalDiagnostic extends LinearOpMode {
                 upperVerticalMotor.setPower(0);
             }
 
-            telemetry.addData("sensorPosition in MM", distanceSensor.getDistance(DistanceUnit.MM));
+            telemetry.addData("sensorDistance in MM", distanceSensor.getDistance(DistanceUnit.MM));
+            telemetry.addData("sensorBlue", colorSensor.blue());
+            telemetry.addData("sensorRed", colorSensor.red());
+            telemetry.addData("sensorGreen", colorSensor.green());
+
             telemetry.addData("lowerPosition", lowerVerticalMotor.getCurrentPosition());
             telemetry.addData("upperPosition", upperVerticalMotor.getCurrentPosition());
             telemetry.update();
