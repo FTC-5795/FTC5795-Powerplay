@@ -145,14 +145,14 @@ public class MeepMeepTesting {
                                 .back(24)
                                 .build()
                 );
-        RoadRunnerBotEntity RightGroundBreaker = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setColorScheme(new ColorSchemeBlueLight())
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setDimensions(13.5, 17)
-                .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-                                .lineToSplineHeading(new Pose2d(-60,60, Math.toRadians(270)))
+//        RoadRunnerBotEntity RightGroundBreaker = new DefaultBotBuilder(meepMeep)
+//                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//                .setColorScheme(new ColorSchemeBlueLight())
+//                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+//                .setDimensions(13.5, 17)
+//                .followTrajectorySequence(drive ->
+//                        drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
+//                                .lineToSplineHeading(new Pose2d(-60,60, Math.toRadians(270)))
 
 //                                .splineToConstantHeading(new Vector2d(-60,50), Math.toRadians(270))
 //                                .lineToSplineHeading(new Pose2d(-20, 12, Math.toRadians(270)))
@@ -166,9 +166,9 @@ public class MeepMeepTesting {
 //                                .waitSeconds(.5)
 //                                .lineToSplineHeading(new Pose2d(-35,12, Math.toRadians(270)))
 //                                .back(24)
-                                .build()
-
-                );
+//                                .build()
+//
+//                );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(true)
@@ -179,7 +179,7 @@ public class MeepMeepTesting {
                 .addEntity(Right1)
                 .addEntity(Right2)
                 .addEntity(Right3)
-                .addEntity(RightGroundBreaker)
+//                .addEntity(RightGroundBreaker)
                 .start();
     }
 }

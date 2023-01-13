@@ -22,7 +22,7 @@ public class RoadRunnerTrajectory extends LinearOpMode {
 
         // Loading up trajectories before start
 
-        drive.setPoseEstimate(new Pose2d(-35, 61.5, 270));
+        drive.setPoseEstimate(new Pose2d(-35, 61.5, Math.toRadians(270)));
 
         TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
                 .splineToConstantHeading(new Vector2d(-24,12), Math.toRadians(0))
