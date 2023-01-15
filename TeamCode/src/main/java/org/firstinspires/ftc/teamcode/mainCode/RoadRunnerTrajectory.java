@@ -33,19 +33,19 @@ public class RoadRunnerTrajectory extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(-35, 61.5, Math.toRadians(270)));
 
         TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-                .addDisplacementMarker(() -> {
-                    telemetry.addData("A", "B");
-                    telemetry.update();
-                })
+//                .addDisplacementMarker(() -> {
+//                    telemetry.addData("A", "B");
+//                    telemetry.update();
+//                })
                 .splineToConstantHeading(new Vector2d(-24,13.5), Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(-20, 13.5, Math.toRadians(270)))
-                .waitSeconds(.5)
+                .lineToSplineHeading(new Pose2d(-18, 13.5, Math.toRadians(270)))
+                .waitSeconds(3)
                 .lineToSplineHeading(new Pose2d(-25,13.5, Math.toRadians(270)))
                 .lineToSplineHeading(new Pose2d(-50,13.5, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-55, 10), Math.toRadians(180))
+                .lineToSplineHeading(new Pose2d(-53, 10, Math.toRadians(180)))
                 .waitSeconds(.5)
-                .splineToConstantHeading(new Vector2d(-50, 13.5), Math.toRadians(180))
-                .back(7)
+                .lineToSplineHeading(new Pose2d(-45, 13.5, Math.toRadians(180)))
+                .back(3)
                 .lineToSplineHeading(new Pose2d(-20,13.5, Math.toRadians(270)))
                 .waitSeconds(.5)
                 .lineToSplineHeading(new Pose2d(-10,13.5, Math.toRadians(270)))
@@ -139,10 +139,10 @@ public class RoadRunnerTrajectory extends LinearOpMode {
         drive.followTrajectorySequence(
                         drive.trajectorySequenceBuilder(Right1.end())
 
-                                .addDisplacementMarker(() -> {
-                                    telemetry.addData("A", "B");
-                                    telemetry.update();
-                                })
+//                                .addDisplacementMarker(() -> {
+//                                    telemetry.addData("A", "B");
+//                                    telemetry.update();
+//                                })
 
 //                                .UNSTABLE_addTemporalMarkerOffset(0.5, () ->
 //                                {SlideLevel.autoVSlide(2);})
@@ -181,11 +181,11 @@ public class RoadRunnerTrajectory extends LinearOpMode {
 //                                })
 
                                 .splineToConstantHeading(new Vector2d(-24,13.5), Math.toRadians(0))
-                                .lineToSplineHeading(new Pose2d(-20, 13.5, Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-18, 13.5, Math.toRadians(270)))
                                 .waitSeconds(3)
                                 .lineToSplineHeading(new Pose2d(-25,13.5, Math.toRadians(270)))
-                                .lineToSplineHeading(new Pose2d(-53,13.5, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(-55, 12, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-50,13.5, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-53, 10, Math.toRadians(180)))
                                 .waitSeconds(.5)
                                 .lineToSplineHeading(new Pose2d(-45, 13.5, Math.toRadians(180)))
                                 .back(3)
