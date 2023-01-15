@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Vertical slide motor controls (Using PID) (Start slides retracted with tension on both motors)
@@ -21,31 +22,33 @@ public class vSlideMotorController {
     private double target = 0; //target height of slides in ticks
     private boolean spamLockUP, spamLockDOWN;
     private boolean autoReset = true; //Enable to auto reset slides at targetLevel 0 (ground)
-    private double calibrationRegion = 100; //allowable region (height in ticks) to reset slides
+    private Servo gripServo;
 
     //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
-    private double acceptableError = 35; //Ticks of acceptableError +/- in slide positions
+    private double acceptableError = 18; //Ticks of acceptableError +/- in slide positions
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
         lowerVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lowerVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lowerVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lowerVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        lowerVerticalMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         upperVerticalMotor = hardwareMap.get(DcMotorEx.class, "upperVerticalMotor");
         upperVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upperVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        gripServo = hardwareMap.get(Servo.class, "gripServo");
     }
 
     public void vSlide (boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
 
-        double state1 = lowerVerticalMotor.getCurrentPosition();
+        double state1 = -lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
         previousTargetLevel = targetLevel;
 
@@ -57,6 +60,9 @@ public class vSlideMotorController {
 
         if (dUP && !spamLockUP) {
             if (targetLevel < 10) {
+                for (int i = 0; i < 10; i++) {
+                    gripServo.setPosition(0.875);
+                } //10 loops of delay
                 targetLevel = 10;
             }
             else if (targetLevel < 12) {
@@ -72,6 +78,7 @@ public class vSlideMotorController {
         if (dDOWN && !spamLockDOWN) {
             if (targetLevel < 10 && targetLevel % 2 == 1) {
                 targetLevel -= 1;
+                gripServo.setPosition(0.75);
             }
             else if (targetLevel > 10) {
                 targetLevel -= 1;
@@ -92,22 +99,8 @@ public class vSlideMotorController {
             slideReset();
         }
 
-        //slide adjustment safety controls
-        if (targetLevel != previousTargetLevel) {
-            target = targetLevelConversion(previousTargetLevel);
-            while (state1 > target+acceptableError || state1 < target-acceptableError || state2 > target+acceptableError || state2 < target-acceptableError ) {
-                state1 = lowerVerticalMotor.getCurrentPosition();
-                state2 = upperVerticalMotor.getCurrentPosition();
-                lowerVerticalPower = PIDControl1(target, state1);
-                upperVerticalPower = PIDControl2(target, state2);
-            }
-            positionalAdjustmentProfile(true, 0, 0); //resets manual positioning of slides
-        }
-
         target = targetLevelConversion(targetLevel); //converts to encoder tick value
-
-        //Manual adjustment to slide height using triggers
-        positionalAdjustmentProfile(false, tDOWN, tUP); //holds prior trigger values
+        positionalAdjustmentProfile(tDOWN, tUP);
 
         lowerVerticalPower = PIDControl1(target, state1);
         upperVerticalPower = PIDControl2(target, state2);
@@ -196,13 +189,10 @@ public class vSlideMotorController {
 
     }
 
-    public void positionalAdjustmentProfile(boolean reset, double tDOWN, double tUP) {
-        double adjustmentFactor = 1 * (tUP - tDOWN);
-        if (reset) {
-            adjustmentFactor = 0;
-        }
+    public void positionalAdjustmentProfile(double tDOWN, double tUP) {
+        double adjustmentFactor = 50 * (tUP - tDOWN);
         target += adjustmentFactor;
-    }
+    } //adjusts up to 50 encoder ticks up/down
 
     public void autoVSlide(int targetLevel) {
 
@@ -217,19 +207,23 @@ public class vSlideMotorController {
             state2 = upperVerticalMotor.getCurrentPosition();
             lowerVerticalPower = PIDControl1(target, state1);
             upperVerticalPower = PIDControl2(target, state2);
+            lowerVerticalMotor.setPower(lowerVerticalPower);
+            upperVerticalMotor.setPower(upperVerticalPower);
         }
+        lowerVerticalMotor.setPower(0);
+        upperVerticalMotor.setPower(0);
     }
 
     //For back up use only
     public void vSlideBackUp (boolean dUP, boolean dDOWN, boolean grabPosition) {
 
         if (dUP) {
-            lowerVerticalMotor.setPower(0.32);
-            upperVerticalMotor.setPower(0.32);
+            lowerVerticalMotor.setPower(0.8);
+            upperVerticalMotor.setPower(0.8);
         }
         else if (dDOWN) {
-            lowerVerticalMotor.setPower(-0.32);
-            upperVerticalMotor.setPower(-0.32);
+            lowerVerticalMotor.setPower(-0.8);
+            upperVerticalMotor.setPower(-0.8);
         }
         else {
             lowerVerticalMotor.setPower(0);

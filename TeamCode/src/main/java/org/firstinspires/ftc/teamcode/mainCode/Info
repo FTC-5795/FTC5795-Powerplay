@@ -38,9 +38,10 @@ Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTele
         -B button sets slides to "up" grab position (3) preparing for a 2-stack of cones
         -A button sets slides to "up" grab position (1) preparing for a 1-stack of cones
         -Left bumper toggles the grip servo
+        -Automatically opens grabber when going down for cone and closes when coming back up
         -Left and Right Analog Buttons combined reset the slides (overrides to level 0 as well) //TODO: Tuning
-        -Holding left trigger reduces slide height relative to depth (resets with d-pad assignment)
-        -Holding right trigger increases slide height relative to depth (resets with d-pad assignment)
+        -Holding left trigger reduces slide height relative to depth
+        -Holding right trigger increases slide height relative to depth
 
 Autonomous:
     Odometry:

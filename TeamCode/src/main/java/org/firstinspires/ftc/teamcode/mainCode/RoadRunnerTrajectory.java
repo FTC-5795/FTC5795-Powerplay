@@ -139,20 +139,34 @@ public class RoadRunnerTrajectory extends LinearOpMode {
         drive.followTrajectorySequence(
                         drive.trajectorySequenceBuilder(Right1.end())
 
-//                                .addDisplacementMarker(() -> {
-//                                    telemetry.addData("A", "B");
-//                                    telemetry.update();
-//                                })
+                                .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(2);
+                                })
 
-//                                .UNSTABLE_addTemporalMarkerOffset(0.5, () ->
-//                                {SlideLevel.autoVSlide(2);})
+                               .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(12);
+                                })
+
+                                .addDisplacementMarker(() -> {
+                                    Grab.autoGrip(false);
+                                })
+
+                                .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(10);
+                                })
 //
-//                                .UNSTABLE_addTemporalMarkerOffset(1, () ->
-//                                {SlideLevel.autoVSlide(12);})
-////
-//                                .UNSTABLE_addTemporalMarkerOffset(3.5, () ->
-//                                {Grab.autoGrip(false);})
 
+                                .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(9);
+                                })
+
+                                .addDisplacementMarker(() -> {
+                                    Grab.autoGrip(true);
+                                })
+
+                                .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(10);
+                                })
 //
 //                                .UNSTABLE_addTemporalMarkerOffset(4, () ->
 //                                {SlideLevel.autoVSlide(10);})
@@ -182,7 +196,13 @@ public class RoadRunnerTrajectory extends LinearOpMode {
 
                                 .splineToConstantHeading(new Vector2d(-24,13.5), Math.toRadians(0))
                                 .lineToSplineHeading(new Pose2d(-18, 13.5, Math.toRadians(270)))
+                                .addDisplacementMarker(() -> {
+                                    SlideLevel.autoVSlide(12);
+                                })
                                 .waitSeconds(3)
+                                .addDisplacementMarker(() -> {
+                                    Grab.autoGrip(false);
+                                })
                                 .lineToSplineHeading(new Pose2d(-25,13.5, Math.toRadians(270)))
                                 .lineToSplineHeading(new Pose2d(-50,13.5, Math.toRadians(180)))
                                 .lineToSplineHeading(new Pose2d(-53, 10, Math.toRadians(180)))

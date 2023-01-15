@@ -26,7 +26,7 @@ public class verticalDiagnostic extends LinearOpMode {
         lowerVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lowerVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lowerVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lowerVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        lowerVerticalMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         upperVerticalMotor = hardwareMap.get(DcMotorEx.class, "upperVerticalMotor");
         upperVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
