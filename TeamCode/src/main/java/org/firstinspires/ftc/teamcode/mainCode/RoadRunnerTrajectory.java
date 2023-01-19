@@ -33,22 +33,27 @@ public class RoadRunnerTrajectory extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(-35, 61.5, Math.toRadians(270)));
 
         TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-//                .addDisplacementMarker(() -> {
-//                    telemetry.addData("A", "B");
-//                    telemetry.update();
-//                })
-                .splineToConstantHeading(new Vector2d(-24,13.5), Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(-18, 13.5, Math.toRadians(270)))
-                .waitSeconds(3)
-                .lineToSplineHeading(new Pose2d(-25,13.5, Math.toRadians(270)))
-                .lineToSplineHeading(new Pose2d(-50,13.5, Math.toRadians(180)))
+                .UNSTABLE_addTemporalMarkerOffset(1, () ->
+                {SlideLevel.autoVSlide(12);})
+                .UNSTABLE_addTemporalMarkerOffset(3, () ->
+                {Grab.autoGrip(false);})
+                .UNSTABLE_addTemporalMarkerOffset(8, () ->
+                {SlideLevel.autoVSlide(0);})
+
+                .splineToConstantHeading(new Vector2d(-24,14.5), Math.toRadians(0))
+                .lineToSplineHeading(new Pose2d(-17, 14.5, Math.toRadians(270)))
+                .forward(4.5)
+                .waitSeconds(4)
+                .back(4.5)
+                .lineToSplineHeading(new Pose2d(-25,14.5, Math.toRadians(270)))
+                .lineToSplineHeading(new Pose2d(-50,14.5, Math.toRadians(180)))
                 .lineToSplineHeading(new Pose2d(-53, 10, Math.toRadians(180)))
                 .waitSeconds(.5)
-                .lineToSplineHeading(new Pose2d(-45, 13.5, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(-45, 14.5, Math.toRadians(180)))
                 .back(3)
-                .lineToSplineHeading(new Pose2d(-20,13.5, Math.toRadians(270)))
+                .lineToSplineHeading(new Pose2d(-20,14.5, Math.toRadians(270)))
                 .waitSeconds(.5)
-                .lineToSplineHeading(new Pose2d(-10,13.5, Math.toRadians(270)))
+                .lineToSplineHeading(new Pose2d(-10,14.5, Math.toRadians(270)))
                 .back(24)
                 .build();
 
@@ -138,80 +143,27 @@ public class RoadRunnerTrajectory extends LinearOpMode {
         sleep(2000);
         drive.followTrajectorySequence(
                         drive.trajectorySequenceBuilder(Right1.end())
+                                .UNSTABLE_addTemporalMarkerOffset(1, () ->
+                                {SlideLevel.autoVSlide(12);})
+                                .UNSTABLE_addTemporalMarkerOffset(3, () ->
+                                {Grab.autoGrip(false);})
+                                .UNSTABLE_addTemporalMarkerOffset(8, () ->
+                                {SlideLevel.autoVSlide(0);})
 
-                                .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(2);
-                                })
-
-                               .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(12);
-                                })
-
-                                .addDisplacementMarker(() -> {
-                                    Grab.autoGrip(false);
-                                })
-
-                                .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(10);
-                                })
-//
-
-                                .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(9);
-                                })
-
-                                .addDisplacementMarker(() -> {
-                                    Grab.autoGrip(true);
-                                })
-
-                                .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(10);
-                                })
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(4, () ->
-//                                {SlideLevel.autoVSlide(10);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(5, () ->
-//                                {SlideLevel.autoVSlide(9);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(5.5, () ->
-//                                {Grab.autoGrip(true);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(5.75, () ->
-//                                {SlideLevel.autoVSlide(10);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(6, () ->
-//                                {SlideLevel.autoVSlide(12);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(7, () ->
-//                                {Grab.autoGrip(false);})
-//
-//                                .UNSTABLE_addTemporalMarkerOffset(7.5, () ->
-//                                {SlideLevel.autoVSlide(0);})
-
-//                                .addDisplacementMarker(() -> {
-//                                    telemetry.addData("I works", "true");
-//                                    telemetry.update();
-//                                })
-
-                                .splineToConstantHeading(new Vector2d(-24,13.5), Math.toRadians(0))
-                                .lineToSplineHeading(new Pose2d(-18, 13.5, Math.toRadians(270)))
-                                .addDisplacementMarker(() -> {
-                                    SlideLevel.autoVSlide(12);
-                                })
-                                .waitSeconds(3)
-                                .addDisplacementMarker(() -> {
-                                    Grab.autoGrip(false);
-                                })
-                                .lineToSplineHeading(new Pose2d(-25,13.5, Math.toRadians(270)))
-                                .lineToSplineHeading(new Pose2d(-50,13.5, Math.toRadians(180)))
+                                .splineToConstantHeading(new Vector2d(-24,14.5), Math.toRadians(0))
+                                .lineToSplineHeading(new Pose2d(-17, 14.5, Math.toRadians(270)))
+                                .forward(4.5)
+                                .waitSeconds(4)
+                                .back(4.5)
+                                .lineToSplineHeading(new Pose2d(-25,14.5, Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-50,14.5, Math.toRadians(180)))
                                 .lineToSplineHeading(new Pose2d(-53, 10, Math.toRadians(180)))
                                 .waitSeconds(.5)
-                                .lineToSplineHeading(new Pose2d(-45, 13.5, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-45, 14.5, Math.toRadians(180)))
                                 .back(3)
-                                .lineToSplineHeading(new Pose2d(-20,13.5, Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-20,14.5, Math.toRadians(270)))
                                 .waitSeconds(.5)
-                                .lineToSplineHeading(new Pose2d(-10,13.5, Math.toRadians(270)))
+                                .lineToSplineHeading(new Pose2d(-10,14.5, Math.toRadians(270)))
                                 .back(24)
                                 .build()
         );
@@ -310,3 +262,38 @@ public class RoadRunnerTrajectory extends LinearOpMode {
 //        );
     }
 }
+
+//                                {SlideLevel.autoVSlide(2);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(1, () ->
+//                                {SlideLevel.autoVSlide(12);})
+////
+//                                .UNSTABLE_addTemporalMarkerOffset(3.5, () ->
+//                                {Grab.autoGrip(false);})
+
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(4, () ->
+//                                {SlideLevel.autoVSlide(10);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(5, () ->
+//                                {SlideLevel.autoVSlide(9);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(5.5, () ->
+//                                {Grab.autoGrip(true);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(5.75, () ->
+//                                {SlideLevel.autoVSlide(10);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(6, () ->
+//                                {SlideLevel.autoVSlide(12);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(7, () ->
+//                                {Grab.autoGrip(false);})
+//
+//                                .UNSTABLE_addTemporalMarkerOffset(7.5, () ->
+//                                {SlideLevel.autoVSlide(0);})
+
+//                                .addDisplacementMarker(() -> {
+//                                    telemetry.addData("I works", "true");
+//                                    telemetry.update();
+//                                })

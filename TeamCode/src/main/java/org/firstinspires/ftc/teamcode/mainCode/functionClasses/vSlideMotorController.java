@@ -28,7 +28,7 @@ public class vSlideMotorController {
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
-    private double acceptableError = 18; //Ticks of acceptableError +/- in slide positions
+    private double acceptableError = 50; //Ticks of acceptableError +/- in slide positions
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
@@ -199,11 +199,11 @@ public class vSlideMotorController {
         //slide heights explained on info page
 
         double target = targetLevelConversion(targetLevel);
-        double state1 = lowerVerticalMotor.getCurrentPosition();
+        double state1 = -lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
 
         while (state1 > target+acceptableError || state1 < target-acceptableError || state2 > target+acceptableError || state2 < target-acceptableError ) {
-            state1 = lowerVerticalMotor.getCurrentPosition();
+            state1 = -lowerVerticalMotor.getCurrentPosition();
             state2 = upperVerticalMotor.getCurrentPosition();
             lowerVerticalPower = PIDControl1(target, state1);
             upperVerticalPower = PIDControl2(target, state2);
