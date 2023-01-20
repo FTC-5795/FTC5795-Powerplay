@@ -26,14 +26,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
+//import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
+//import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
@@ -45,8 +45,8 @@ public class Camera_Exa_Left extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
-    gripServoController Grab = new gripServoController(hardwareMap);
+//    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
+//    gripServoController Grab = new gripServoController(hardwareMap);
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -94,51 +94,23 @@ public class Camera_Exa_Left extends LinearOpMode {
 
         //defines the sequences and loads them in before start
 
-        drive.setPoseEstimate(new Pose2d(35, 61.5, 270));
+//        drive.setPoseEstimate(new Pose2d(35, 61.5, 270));
 
-        TrajectorySequence Left1 = drive.trajectorySequenceBuilder(new Pose2d(35, 61.5, Math.toRadians(270)))
-                .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                .waitSeconds(.5)
-                .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                .waitSeconds(.5)
-                .back(7)
-                .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                .waitSeconds(.5)
-                .lineToSplineHeading(new Pose2d(14,12, Math.toRadians(270)))
-                .back(24)
+        TrajectorySequence Left1Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .strafeLeft(22)
+                .forward(24)
                 .build();
 
-        TrajectorySequence Left2 = drive.trajectorySequenceBuilder(new Pose2d(35, 61.5, Math.toRadians(270)))
-                .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                .waitSeconds(.5)
-                .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                .waitSeconds(.5)
-                .back(7)
-                .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                .waitSeconds(.5)
-                .lineToSplineHeading(new Pose2d(33,12, Math.toRadians(270)))
-                .back(24)
+        TrajectorySequence Left2Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(24)
                 .build();
 
-        TrajectorySequence Left3 = drive.trajectorySequenceBuilder(new Pose2d(35, 61.5, Math.toRadians(270)))
-                .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                .waitSeconds(.5)
-                .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                .waitSeconds(.5)
-                .back(7)
-                .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                .waitSeconds(.5)
-                .lineToSplineHeading(new Pose2d(58,12, Math.toRadians(270)))
-                .back(24)
+        TrajectorySequence Left3Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .strafeRight(25)
+                .forward(24)
                 .build();
 
-        Grab.autoGrip(true);
+//        Grab.autoGrip(true);
 
         /*
          * The INIT-loop:
@@ -164,57 +136,29 @@ public class Camera_Exa_Left extends LinearOpMode {
 
                 //Code for trajectory
                 if (tagOfInterest == null || tagOfInterest.id == Left) {
-                    drive.followTrajectorySequence(Left1);
+                    drive.followTrajectorySequence(Left1Parking);
                     sleep(2000);
                     drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left1.end())
-                                    .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                                    .waitSeconds(.5)
-                                    .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                                    .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                                    .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                                    .waitSeconds(.5)
-                                    .back(7)
-                                    .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                                    .waitSeconds(.5)
-                                    .lineToSplineHeading(new Pose2d(14,12, Math.toRadians(270)))
-                                    .back(24)
+                            drive.trajectorySequenceBuilder(Left1Parking.end())
+                                    .strafeLeft(22)
+                                    .forward(24)
                                     .build()
                     );
                 } else if (tagOfInterest.id == Middle) {
-                    drive.followTrajectorySequence(Left2);
+                    drive.followTrajectorySequence(Left2Parking);
                     sleep(2000);
                     drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left2.end())
-                                    .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                                    .waitSeconds(.5)
-                                    .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                                    .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                                    .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                                    .waitSeconds(.5)
-                                    .back(7)
-                                    .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                                    .waitSeconds(.5)
-                                    .lineToSplineHeading(new Pose2d(33,12, Math.toRadians(270)))
-                                    .back(24)
+                            drive.trajectorySequenceBuilder(Left2Parking.end())
+                                    .forward(24)
                                     .build()
                     );
                 } else if (tagOfInterest.id == Right) {
-                    drive.followTrajectorySequence(Left3);
+                    drive.followTrajectorySequence(Left3Parking);
                     sleep(2000);
                     drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left2.end())
-                                    .splineToConstantHeading(new Vector2d(24,12), Math.toRadians(180))
-                                    .waitSeconds(.5)
-                                    .splineToConstantHeading(new Vector2d(25, 12), Math.toRadians(0))
-                                    .lineToSplineHeading(new Pose2d(40,12, Math.toRadians(0)))
-                                    .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
-                                    .waitSeconds(.5)
-                                    .back(7)
-                                    .lineToSplineHeading(new Pose2d(24,12, Math.toRadians(270)))
-                                    .waitSeconds(.5)
-                                    .lineToSplineHeading(new Pose2d(58,12, Math.toRadians(270)))
-                                    .back(24)
+                            drive.trajectorySequenceBuilder(Left3Parking.end())
+                                    .strafeRight(25)
+                                    .forward(24)
                                     .build()
                     );
                 }
