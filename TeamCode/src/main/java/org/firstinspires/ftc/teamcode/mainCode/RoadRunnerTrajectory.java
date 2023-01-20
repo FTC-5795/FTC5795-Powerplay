@@ -13,12 +13,8 @@ import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorContro
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
 
-/*
- * This is an example of a more complex path to really test the tuning.
- */
-
 //   SlideLevel.autoVSlide(0-12);
-//        Grab.autoGrip(TRUE/FALSE);
+//   Grab.autoGrip(TRUE/FALSE);
 
 @Autonomous(group = "drive")
 public class RoadRunnerTrajectory extends LinearOpMode {
@@ -30,6 +26,7 @@ public class RoadRunnerTrajectory extends LinearOpMode {
 
         // Loading up trajectories before start
 
+        //Staring pose of robot
         drive.setPoseEstimate(new Pose2d(-35, 61.5, Math.toRadians(270)));
 
         TrajectorySequence Right1 = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
