@@ -53,6 +53,10 @@ public class vSlideMotorController {
 
         if (grabPosition > 0) {
             targetLevel = grabPosition;
+            grab = 2;
+        }
+        else {
+            grab = 0;
         }
 
         if (dUP && !spamLockUP) {
@@ -92,7 +96,9 @@ public class vSlideMotorController {
             slideReset();
         }
 
-        autoGrab();
+        if (targetLevel < 10 && targetLevel % 2 == 0 && lowerVerticalPower < 0.02) {
+            grab = 1;
+        }
 
         target = targetLevelConversion(targetLevel); //converts to encoder tick value
         positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
@@ -221,9 +227,7 @@ public class vSlideMotorController {
         }
     }
 
-    public void autoGrab() {
-
-
-
+    public double autoGrab() {
+        return grab;
     }
 }
