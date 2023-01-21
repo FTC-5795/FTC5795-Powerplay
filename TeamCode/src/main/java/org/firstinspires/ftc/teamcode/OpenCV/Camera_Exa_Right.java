@@ -109,20 +109,23 @@ public class Camera_Exa_Right extends LinearOpMode {
         TrajectorySequence Right3Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
                 .forward(1)
                 .strafeRight(23.5)
-                .forward(24)
-                .turn(Math.toRadians(40))
+                .forward(25)
+                .turn(Math.toRadians(45))
+                .forward(1)
                 .build();
 
         TrajectorySequence Right2Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
-                .forward(27)
-                .turn(Math.toRadians(40))
+                .forward(49)
+                .turn(Math.toRadians(45))
+                .forward(1)
                 .build();
 
         TrajectorySequence Right1Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
                 .forward(1)
                 .strafeLeft(25)
-                .forward(26)
-                .turn(Math.toRadians(40))
+                .forward(25)
+                .turn(Math.toRadians(45))
+                .forward(1)
                 .build();
 
                 Grab.autoGrip(true);
