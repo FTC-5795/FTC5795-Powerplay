@@ -40,14 +40,13 @@ import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySeq
 
 import java.util.ArrayList;
 
+import kotlin.math.UMathKt;
+
 @Autonomous
 public class Camera_Exa_Right extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
-
-//    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
-    gripServoController Grab = new gripServoController(hardwareMap);
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -71,8 +70,11 @@ public class Camera_Exa_Right extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
+
+        //    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
+        gripServoController Grab = new gripServoController(hardwareMap);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -102,20 +104,25 @@ public class Camera_Exa_Right extends LinearOpMode {
 
         //defines the sequences and loads them in before start
 
-        drive.setPoseEstimate(new Pose2d(-35, 61.5, 270));
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
-        TrajectorySequence Right3Parking = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-                .strafeRight(22)
+        TrajectorySequence Right3Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(1)
+                .strafeRight(23.5)
                 .forward(24)
+                .turn(Math.toRadians(40))
                 .build();
 
-        TrajectorySequence Right2Parking = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-                .forward(24)
+        TrajectorySequence Right2Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(27)
+                .turn(Math.toRadians(40))
                 .build();
 
-        TrajectorySequence Right1Parking = drive.trajectorySequenceBuilder(new Pose2d(-35, 61.5, Math.toRadians(270)))
-                .strafeLeft(27)
-                .forward(24)
+        TrajectorySequence Right1Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(1)
+                .strafeLeft(25)
+                .forward(26)
+                .turn(Math.toRadians(40))
                 .build();
 
                 Grab.autoGrip(true);
@@ -124,7 +131,10 @@ public class Camera_Exa_Right extends LinearOpMode {
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
-        while (!isStarted() && !isStopRequested())
+
+        waitForStart();
+
+        while (opModeIsActive())
         {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -149,31 +159,12 @@ public class Camera_Exa_Right extends LinearOpMode {
                 //Code for trajectory
                 if(tagOfInterest == null || tagOfInterest.id == Left) {
                     drive.followTrajectorySequence(Right1Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Right1Parking.end())
-                                    .strafeLeft(27)
-                                    .forward(24)
-                                    .build()
-                    );
                 }
                 else if (tagOfInterest.id == Middle) {
                     drive.followTrajectorySequence(Right2Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Right2Parking.end())
-                                    .forward(24)
-                                    .build()
-                    );                }
+                }
                 else if (tagOfInterest.id == Right) {
-                    drive.followTrajectorySequence(Right3Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Right3Parking.end())
-                                    .strafeRight(22)
-                                    .forward(24)
-                                    .build()
-                    );                }
+                    drive.followTrajectorySequence(Right3Parking);}
 
                 if(tagFound)
                 {

@@ -107,7 +107,7 @@ public class FiniteStateMachine extends LinearOpMode {
         if (isStopRequested()) return;
 
         autoTimer.reset();
-
+        slide.autoVSlide(1);
         state = State.INITIAL;
 
         while (opModeIsActive()) {

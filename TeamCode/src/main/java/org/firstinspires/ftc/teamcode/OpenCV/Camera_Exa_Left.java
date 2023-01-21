@@ -45,9 +45,6 @@ public class Camera_Exa_Left extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-//    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
-//    gripServoController Grab = new gripServoController(hardwareMap);
-
     static final double FEET_PER_METER = 3.28084;
 
     // Lens intrinsics
@@ -71,6 +68,10 @@ public class Camera_Exa_Left extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        //    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
+        gripServoController Grab = new gripServoController(hardwareMap);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -94,7 +95,7 @@ public class Camera_Exa_Left extends LinearOpMode {
 
         //defines the sequences and loads them in before start
 
-//        drive.setPoseEstimate(new Pose2d(35, 61.5, 270));
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
         TrajectorySequence Left1Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
                 .strafeLeft(22)
@@ -110,13 +111,16 @@ public class Camera_Exa_Left extends LinearOpMode {
                 .forward(24)
                 .build();
 
-//        Grab.autoGrip(true);
+        Grab.autoGrip(true);
 
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
-        while (!isStarted() && !isStopRequested()) {
+
+        waitForStart();
+
+        while (opModeIsActive()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
             if (currentDetections.size() != 0) {
@@ -137,30 +141,10 @@ public class Camera_Exa_Left extends LinearOpMode {
                 //Code for trajectory
                 if (tagOfInterest == null || tagOfInterest.id == Left) {
                     drive.followTrajectorySequence(Left1Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left1Parking.end())
-                                    .strafeLeft(22)
-                                    .forward(24)
-                                    .build()
-                    );
                 } else if (tagOfInterest.id == Middle) {
                     drive.followTrajectorySequence(Left2Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left2Parking.end())
-                                    .forward(24)
-                                    .build()
-                    );
                 } else if (tagOfInterest.id == Right) {
                     drive.followTrajectorySequence(Left3Parking);
-                    sleep(2000);
-                    drive.followTrajectorySequence(
-                            drive.trajectorySequenceBuilder(Left3Parking.end())
-                                    .strafeRight(25)
-                                    .forward(24)
-                                    .build()
-                    );
                 }
 
                 if (tagFound) {
