@@ -47,14 +47,11 @@ Autonomous:
     Odometry:
     -All functions tuned with three dead wheel tracking
     Roadrunner:
+    -Finite State Machine //TODO: Tuning
     -TODO: In Progress
 
 Other function classes:
     -coneServoController (only tele-Op)
     -botLock (only tele-Op) //TODO: Tuning
     -gripServoController (both tele-Op and auto)
-    -vSlideMotorController (both tele-Op and auto) //TODO: Tuning
-
-NOTE- When using function classes for tele-op, use runOpMode() method in the primary while loop.
-When using function classes for autonomous, use auto[function name] method once (not in a while loop).
-Also make sure to initialize function class objects using hardwareMap.
+    -vSlideMotorController (both tele-Op and auto)

@@ -27,6 +27,7 @@ public class vSlideMotorController {
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
     private double acceptableError = 15; //Ticks of acceptableError +/- in slide positions
+    private double grab = 0; //0 is neutral, 1 is grab, 2 is release
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
@@ -90,6 +91,8 @@ public class vSlideMotorController {
         if (slideReset) {
             slideReset();
         }
+
+        autoGrab();
 
         target = targetLevelConversion(targetLevel); //converts to encoder tick value
         positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
@@ -184,9 +187,9 @@ public class vSlideMotorController {
     }
 
     public void positionalAdjustmentProfile(double tDOWN, double tUP) {
-        double adjustmentFactor = 500 * (tUP - tDOWN);
+        double adjustmentFactor = 120 * (tUP - tDOWN);
         target += adjustmentFactor;
-    } //adjusts up to 500 encoder ticks up/down
+    } //adjusts up to 120 encoder ticks up/down
 
     //Automatic slide function
     public void autoVSlide(int targetLevel) {
@@ -216,5 +219,11 @@ public class vSlideMotorController {
             lowerVerticalMotor.setPower(0);
             upperVerticalMotor.setPower(0);
         }
+    }
+
+    public void autoGrab() {
+
+
+
     }
 }

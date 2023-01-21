@@ -111,7 +111,7 @@ public class oneControllerTeleOp extends LinearOpMode {
             ninetyDegreeController();
 
             //function classes
-            coneServo.cone(gamepad1.b, gamepad1.a);
+            coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad1.a);
             //vSlideMotor.vSlide(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.x, );
 

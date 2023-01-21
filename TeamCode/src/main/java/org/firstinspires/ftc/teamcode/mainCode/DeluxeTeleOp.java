@@ -123,17 +123,18 @@ public class DeluxeTeleOp extends LinearOpMode {
             bLPower = y - x - rx;
             bRPower = y + x + rx;
 
-            //ninety degree turns (method)
-            ninetyDegreeController();
-
             //vertical slide methods
             levelIndicator();
             slideReset();
 
             //function classes
-            coneServo.cone(gamepad1.b, gamepad1.a);
+            coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad2.left_bumper);
             vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, levelIndicator, slideReset, gamepad2.left_trigger, gamepad2.right_trigger);
+
+            //drive train methods
+
+            ninetyDegreeController();
 
             //botLock class
             if (gamepad1.x && !spamLock1) {
@@ -337,5 +338,8 @@ public class DeluxeTeleOp extends LinearOpMode {
         else {
             slideReset = false;
         }
+    }
+    public void uprightProcedure() {
+
     }
 }

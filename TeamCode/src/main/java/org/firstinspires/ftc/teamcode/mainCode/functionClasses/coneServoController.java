@@ -19,48 +19,26 @@ public class coneServoController {
         coneServo.setPosition(0.9);
     }
 
-    public void cone(boolean button, boolean autoButton) {
+    public void cone(boolean button) {
 
         if (button && !spamLock) {
             armUp = !armUp;
-            toggle();
+            toggle(armUp);
             spamLock = true;
         }
         else if (!button) {
             spamLock = false;
         }
 
-        if (autoButton && !spamLock2) {
-            if (armUp) {
-                autoToggle();
-            }
-        }
-        else if (!autoButton) {
-                spamLock2 = false;
-        }
-
     }
 
-    public void toggle() {
+    public void toggle(boolean armGoesUp) {
 
-        if (armUp) {
+        if (armGoesUp) {
             coneServo.setPosition(0.9);
         }
         else {
             coneServo.setPosition(0.575);
         }
-    }
-
-    public void autoToggle() {
-        armUp = false;
-        toggle();
-
-        for (int i = 0; i < 10; i++) {
-            //drive.setMotorPowers(-reversePower, -reversePower, -reversePower, -reversePower);
-        } //adjust i < 10 for reverse time
-        //drive.setMotorPowers(0,0,0,0);
-
-        armUp = true;
-        toggle();
     }
 }
