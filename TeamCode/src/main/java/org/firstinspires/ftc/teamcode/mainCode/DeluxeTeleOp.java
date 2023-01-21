@@ -130,6 +130,14 @@ public class DeluxeTeleOp extends LinearOpMode {
             //function classes
             coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad2.left_bumper);
+
+            if (vSlideMotor.autoGrab() == 1) {
+                gripServo.autoGrip(true);
+            }
+            else if (vSlideMotor.autoGrab() == 2) {
+                gripServo.autoGrip(false);
+            }
+
             vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, levelIndicator, slideReset, gamepad2.left_trigger, gamepad2.right_trigger);
 
             //drive train methods
