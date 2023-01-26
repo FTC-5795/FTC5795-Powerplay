@@ -1,10 +1,13 @@
-package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
+package org.firstinspires.ftc.teamcode.otherCode.diagnostics;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
+@Disabled
 
 //Bot locking mechanism that makes the bot harder to move (can be used to stop quickly/hold position)
 //Does not work with turns or rotational force

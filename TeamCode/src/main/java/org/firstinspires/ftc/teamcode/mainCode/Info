@@ -26,9 +26,6 @@ Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTele
         -Left bumper hold for drift (Bot continues moving in direction originally facing when button pressed regardless of orientation)
         -Right bumper hold halves speed for precision
         -D-Pad left/right sets bot to 90 degree locked positions relative to bot starting pose //TODO: Tuning
-        -B button toggles the arm for pulling cones vertical
-        -A button activates the vertical cone procedure (start with the arm side of the bot flush with cone) //TODO
-        -X button locks bots position using Odometry to make it more resistant to opponents and overshoot //TODO: Tuning
     Controller 2 (Slides):
         -D-Pad down moves slides down when at scoring heights (10-12) and "up" grab positions (1,3,5,7,9)
         -D-Pad up moves slides up when at scoring heights (10-12) and sets slides to low pole (10) otherwise
@@ -48,10 +45,10 @@ Autonomous:
     -All functions tuned with three dead wheel tracking
     Roadrunner:
     -Finite State Machine //TODO: Tuning
+    -Camera EXA left/right tuned for parking
     -TODO: In Progress
 
 Other function classes:
     -coneServoController (only tele-Op)
-    -botLock (only tele-Op) //TODO: Tuning
     -gripServoController (both tele-Op and auto)
     -vSlideMotorController (both tele-Op and auto)

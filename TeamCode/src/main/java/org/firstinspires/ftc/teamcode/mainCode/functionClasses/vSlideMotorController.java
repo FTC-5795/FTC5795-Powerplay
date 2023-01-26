@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -19,15 +20,15 @@ public class vSlideMotorController {
     private int targetLevel = 0; //0 is the reset level
     private int previousTargetLevel = 0; //previous targetLevel
     private double target = 0; //target height of slides in ticks
-    private boolean spamLockUP, spamLockDOWN;
-    private boolean autoReset = true; //Enable to auto reset slides at targetLevel 0 (ground)
+    private boolean spamLockUP, spamLockDOWN, spamLockReset;
+    private ColorSensor sensor;
 
     //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
     private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
     private double acceptableError = 15; //Ticks of acceptableError +/- in slide positions
-    private double grab = 0; //0 is neutral, 1 is grab, 2 is release
+    private int grab = 0; //0 is neutral, 1 is grab, 2 is release
 
     public vSlideMotorController(HardwareMap hardwareMap) {
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
@@ -41,9 +42,11 @@ public class vSlideMotorController {
         upperVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        sensor = hardwareMap.get(ColorSensor.class, "sensor");
     }
 
-    public void vSlide (boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
+    public void vSlide(boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
 
         double state1 = -lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
@@ -53,55 +56,55 @@ public class vSlideMotorController {
 
         if (grabPosition > 0) {
             targetLevel = grabPosition;
-            grab = 2;
-        }
-        else {
-            grab = 0;
         }
 
         if (dUP && !spamLockUP) {
             if (targetLevel < 10) {
                 targetLevel = 10;
-            }
-            else if (targetLevel < 12) {
+            } else if (targetLevel < 12) {
                 targetLevel += 1;
             }
             spamLockUP = true;
             lowerTimer.reset();
             upperTimer.reset();
-        }
-        else if (!dUP) {
+        } else if (!dUP) {
             spamLockUP = false;
         }
         if (dDOWN && !spamLockDOWN) {
             if (targetLevel < 10 && targetLevel % 2 == 1) {
                 targetLevel -= 1;
-            }
-            else if (targetLevel > 10) {
+            } else if (targetLevel > 10) {
                 targetLevel -= 1;
             }
             spamLockDOWN = true;
             lowerTimer.reset();
             upperTimer.reset();
-        }
-        else if (!dDOWN) {
+        } else if (!dDOWN) {
             spamLockDOWN = false;
         }
 
-        //Slide reset controls
-        if (targetLevel == 0 && autoReset == true) {
-            slideReset = true;
-        }
-        if (slideReset) {
-            slideReset();
-        }
-
-        if (targetLevel < 10 && targetLevel % 2 == 0 && lowerVerticalPower < 0.02) {
+        if (targetLevel < 10 && targetLevel % 2 == 0 && lowerVerticalPower > -0.05) {
             grab = 1;
+        }
+        else {
+            grab = 0;
         }
 
         target = targetLevelConversion(targetLevel); //converts to encoder tick value
         positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
+
+        if (target < 0) {
+            target = 0;
+        }
+
+        //Slide reset controls
+        if (slideReset & !spamLockReset) {
+            slideReset();
+            spamLockReset = true;
+        }
+        else if (!slideReset) {
+            spamLockReset = false;
+        }
 
         lowerVerticalPower = PIDControl1(target, state1);
         upperVerticalPower = PIDControl2(target, state2);
@@ -145,43 +148,43 @@ public class vSlideMotorController {
 
     public double targetLevelConversion(int targetLevel) { //converts 0-3 targetLevels to inches
         if (targetLevel == 0) {
-            return 35; //safety +35
+            return 40; //safety +40
         } //stack of 1 (down) | ground/reset level
         else if (targetLevel == 1) {
-            return 300;
+            return 400;
         } //stack of 1 (up)
         else if (targetLevel == 2) {
-            return 150;
+            return 200;
         } //stack of 2 (down)
         else if (targetLevel == 3) {
-            return 450;
+            return 500;
         } //stack of 2 (up)
         else if (targetLevel == 4) {
-            return 275;
+            return 340;
         } //stack of 3 (down)
         else if (targetLevel == 5) {
-            return 580;
+            return 630;
         } //stack of 3 (up)
         else if (targetLevel == 6) {
-            return 435;
+            return 475;
         } //stack of 4 (down)
         else if (targetLevel == 7) {
-            return 690;
+            return 800;
         } //stack of 4 (up)
         else if (targetLevel == 8) {
-            return 560;
+            return 620;
         } //stack of 5 (down)
         else if (targetLevel == 9) {
-            return 820;
+            return 950;
         } //stack of 5 (up)
         else if (targetLevel == 10) {
-            return 1650;
+            return 1580;
         } //small pole
         else if (targetLevel == 11) {
-            return 2625;
+            return 2580;
         } //medium pole
         else if (targetLevel == 12) {
-            return 3525;
+            return 3505;
         } //tall pole
 
         return 0; //for resetting slides
@@ -190,6 +193,34 @@ public class vSlideMotorController {
     //resets motor encoders using color/distance sensor
     public void slideReset() {
 
+        double state1 = -lowerVerticalMotor.getCurrentPosition();
+        double state2 = upperVerticalMotor.getCurrentPosition();
+
+        while (state1 > 50 && state2 > 50) {
+            state1 = -lowerVerticalMotor.getCurrentPosition();
+            state2 = upperVerticalMotor.getCurrentPosition();
+            lowerVerticalPower = PIDControl1(0, state1);
+            upperVerticalPower = PIDControl2(0, state2);
+            lowerVerticalMotor.setPower(lowerVerticalPower);
+            upperVerticalMotor.setPower(upperVerticalPower);
+        } //gets slides close to reset region
+
+        while (sensor.red() < 100) {
+            lowerVerticalMotor.setPower(-0.05);
+            upperVerticalMotor.setPower(-0.05);
+        } //fine tunes reset
+        lowerVerticalMotor.setPower(0);
+        upperVerticalMotor.setPower(0);
+
+        lowerVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lowerVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lowerVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lowerVerticalMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        upperVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        upperVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void positionalAdjustmentProfile(double tDOWN, double tUP) {
@@ -211,23 +242,21 @@ public class vSlideMotorController {
     }
 
     //For back up use only
-    public void vSlideBackUp (boolean dUP, boolean dDOWN, boolean grabPosition) {
+    public void vSlideBackUp(boolean dUP, boolean dDOWN, boolean grabPosition) {
 
         if (dUP) {
             lowerVerticalMotor.setPower(0.8);
             upperVerticalMotor.setPower(0.8);
-        }
-        else if (dDOWN) {
+        } else if (dDOWN) {
             lowerVerticalMotor.setPower(-0.8);
             upperVerticalMotor.setPower(-0.8);
-        }
-        else {
+        } else {
             lowerVerticalMotor.setPower(0);
             upperVerticalMotor.setPower(0);
         }
     }
 
-    public double autoGrab() {
+    public int autoGrab() {
         return grab;
     }
 }

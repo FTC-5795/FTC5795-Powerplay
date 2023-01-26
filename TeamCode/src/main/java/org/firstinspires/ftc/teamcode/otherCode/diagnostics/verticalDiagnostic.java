@@ -54,14 +54,17 @@ public class verticalDiagnostic extends LinearOpMode {
             if (gamepad1.a) {
                 lower = true;
                 upper = false;
+                telemetry.addLine("lower");
             }
             else if (gamepad1.b) {
                 lower = true;
                 upper = true;
+                telemetry.addLine("both");
             }
             else if (gamepad1.y) {
                 lower = false;
                 upper = true;
+                telemetry.addLine("upper");
             }
 
             if (lower) {
