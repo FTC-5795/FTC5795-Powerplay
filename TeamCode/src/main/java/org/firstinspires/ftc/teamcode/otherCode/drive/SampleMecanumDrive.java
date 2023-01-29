@@ -53,8 +53,8 @@ import static org.firstinspires.ftc.teamcode.otherCode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(1, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(1, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 1);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -290,14 +290,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
 
-        double left, right;
-        left = 1;
-        right = 1;
-
-        v *= 1*left;
-        v1 *= 0.984*left;
-        v2 *= 1.0425*right;
-        v3 *= 0.984*right;
+        //Following code is responsible for motor drift issues
+        v *= 1;
+        v1 *= 0.984;
+        v2 *= 1.0425;
+        v3 *= 0.984;
 
         double driftDenom = Math.max(Math.max(Math.max(v,v1), Math.max(v2,v3)),1);
         v /= driftDenom;

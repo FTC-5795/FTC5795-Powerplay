@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.botLock;
+import org.firstinspires.ftc.teamcode.otherCode.diagnostics.botLock;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.coneServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorContro
 
 /* Deluxe TeleOp, the 5-Star Premium Supreme Elite Version
 Features included are moving (duh), drift (left bumper), 90-degree locked rotation, and function classes.
-Function classes include vertical slide, cone upright servo, and grip servo.
+Function classes include vertical slide, cone upright servo, grip servo, and botLock.
 */
 
 @TeleOp
@@ -34,7 +34,9 @@ public class DeluxeTeleOp extends LinearOpMode {
     private double targetAngle; //for ninety degree turn code (double)
     private double acceptableError = 2; //degrees of error accepted in turn code
     private double practiceCoefficient = 1; //Adjust for practice
-    private boolean spamLock1; //for botLock
+    private boolean spamLock1, slowMode = false;
+    private int levelIndicator; //for vSlideController
+    private boolean slideReset; //for vSlideController
 
     //PID variables
     private double integralSum = 0, derivative, error = 0, previousError; //for PID control (dynamic)
@@ -43,31 +45,38 @@ public class DeluxeTeleOp extends LinearOpMode {
     private static double Ki = 0; //Integral Gain (steady state error)
 
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer2 = new ElapsedTime();
+
+    BNO055IMU imu;
 
     @Override
     public void runOpMode() throws InterruptedException{
 
         //for imu initialization
-        BNO055IMU imu;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters gyro = new BNO055IMU.Parameters();
         gyro.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         gyro.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         //gyro.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample op mode
         gyro.mode = BNO055IMU.SensorMode.IMU;
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(gyro);
 
         //Function class initializations
         coneServoController coneServo = new coneServoController(hardwareMap);
         gripServoController gripServo = new gripServoController(hardwareMap);
         vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
-        botLock botLock = new botLock(hardwareMap);
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
         fR = hardwareMap.get(DcMotorEx.class, "rightFront");
         bL = hardwareMap.get(DcMotorEx.class, "leftRear");
         bR = hardwareMap.get(DcMotorEx.class, "rightRear");
+
+        fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -114,29 +123,27 @@ public class DeluxeTeleOp extends LinearOpMode {
             bLPower = y - x - rx;
             bRPower = y + x + rx;
 
-            //ninety degree turns (method)
-            ninetyDegreeController();
+            //vertical slide methods
+            levelIndicator();
+            slideReset();
 
             //function classes
-            coneServo.cone(gamepad2.b);
-            gripServo.grip(gamepad2.a);
-            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, gamepad1.x);
+            coneServo.cone(gamepad1.b);
+            gripServo.grip(gamepad2.left_bumper);
 
-            //botLock class
-            if (gamepad1.x && !spamLock1) {
-                spamLock1 = true;
-                botLock.resetLock();
+            if (vSlideMotor.autoGrab() == 1) {
+                gripServo.autoGrip(true);
             }
-            else if (gamepad1.x && spamLock1) {
-                double[] lockArray = botLock.lockBot();
-                fLPower = lockArray[1];
-                bLPower = lockArray[2];
-                bRPower = lockArray[3];
-                fRPower = lockArray[4];
+            else if (vSlideMotor.autoGrab() == 2) {
+                gripServo.autoGrip(false);
             }
-            else if (!gamepad1.x) {
-                spamLock1 = false;
-            }
+
+            vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, levelIndicator,
+                    slideReset, gamepad2.left_trigger, gamepad2.right_trigger);
+
+            //drive train methods
+
+            ninetyDegreeController();
 
             //Bot Drift Issues (Not NFS Drifting)
             fLPower *= 1; // 0%
@@ -152,7 +159,15 @@ public class DeluxeTeleOp extends LinearOpMode {
             bRPower /= denominator;
 
             //Slow mode
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_bumper && !spamLock1) {
+                spamLock1 = true;
+                slowMode = !slowMode;
+            }
+            else if (!gamepad1.right_bumper) {
+                spamLock1 = false;
+            }
+
+            if (slowMode) {
                 fLPower /= 2;
                 fRPower /= 2;
                 bLPower /= 2;
@@ -267,7 +282,8 @@ public class DeluxeTeleOp extends LinearOpMode {
     //Positional Rotation System (input targetAngle)
     public void positionTracking() {
 
-        if (positionalRotationMode) {
+        if (positionalRotationMode && timer2.seconds() < 2) {
+
             if (targetAngle - orientation > 180) {
                 orientation += 360;
             }
@@ -275,7 +291,7 @@ public class DeluxeTeleOp extends LinearOpMode {
                 orientation -= 360;
             }
 
-            if (!((targetAngle + 0.25) > orientation && orientation > (targetAngle - 0.25))) { //precision control (currently +-0.25)
+            if ((Math.abs(gamepad1.left_stick_x) + Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.right_stick_y)) < 0.1) {
                 fLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
                 fRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
                 bLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
@@ -285,9 +301,44 @@ public class DeluxeTeleOp extends LinearOpMode {
             }
             else {
                 positionalRotationMode = false;
-                timer.reset(); //Prevents build up with integral PID control
-                integralSum = 0; //Prevents overlap with integral PID control
             }
+        }
+        else {
+            timer.reset(); //Prevents build up with integral PID control
+            integralSum = 0; //Prevents overlap with integral PID control
+            timer2.reset(); //Turn controller safety (2 seconds)
+            positionalRotationMode = false;
+        }
+    }
+
+    //Vertical Slide Level Indicator
+    public void levelIndicator() {
+        if (gamepad2.right_bumper) {
+            levelIndicator = 9;
+        }
+        else if (gamepad2.y) {
+            levelIndicator = 7;
+        }
+        else if (gamepad2.x) {
+            levelIndicator = 5;
+        }
+        else if (gamepad2.b) {
+            levelIndicator = 3;
+        }
+        else if (gamepad2.a) {
+            levelIndicator = 1;
+        }
+        else {
+            levelIndicator = 0;
+        }
+    }
+
+    public void slideReset() {
+        if (gamepad2.left_stick_button && gamepad2.right_stick_button) {
+            //slideReset = true;
+        }
+        else {
+            slideReset = false;
         }
     }
 }

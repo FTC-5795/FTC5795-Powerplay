@@ -21,21 +21,30 @@
 
 package org.firstinspires.ftc.teamcode.OpenCV;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+
+import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
 
 import java.util.ArrayList;
 
-@TeleOp
-public class Camera_Exa extends LinearOpMode
-{
+import kotlin.math.UMathKt;
+
+@Autonomous
+public class Camera_Exa_Right extends LinearOpMode {
+
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -61,11 +70,17 @@ public class Camera_Exa extends LinearOpMode
     AprilTagDetection tagOfInterest = null;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
+
+        //    vSlideMotorController SlideLevel = new vSlideMotorController(hardwareMap);
+        gripServoController Grab = new gripServoController(hardwareMap);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
+//        SlideLevel.autoVSlide(0-12);
+//        Grab.autoGrip(TRUE/FALSE);
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -82,14 +97,41 @@ public class Camera_Exa extends LinearOpMode
 
             }
         });
+        //this bs makes the drive function work for...idk some reason, don't touch it
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         telemetry.setMsTransmissionInterval(50);
+
+        //defines the sequences and loads them in before start
+
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
+
+        TrajectorySequence Right3Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(1)
+                .strafeRight(25)
+                .forward(25)
+                .build();
+
+        TrajectorySequence Right2Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(50)
+                .build();
+
+        TrajectorySequence Right1Parking = drive.trajectorySequenceBuilder(new Pose2d(0, 0, Math.toRadians(0)))
+                .forward(1)
+                .strafeLeft(25.5)
+                .forward(25)
+                .build();
+
+                Grab.autoGrip(true);
 
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
-        while (!isStarted() && !isStopRequested())
+
+        waitForStart();
+
+        while (opModeIsActive())
         {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -106,16 +148,20 @@ public class Camera_Exa extends LinearOpMode
                         break;
                     }
                 }
+
+                // SlideLevel.autoVSlide(4);
+                // SlideLevel.autoVSlide(1);
+                // Grip.autoGrip(true);
+
                 //Code for trajectory
                 if(tagOfInterest == null || tagOfInterest.id == Left) {
-                    telemetry.addData("Id", "17 left");
+                    drive.followTrajectorySequence(Right1Parking);
                 }
                 else if (tagOfInterest.id == Middle) {
-                    telemetry.addData("Id", "18 middle");
+                    drive.followTrajectorySequence(Right2Parking);
                 }
                 else if (tagOfInterest.id == Right) {
-                    telemetry.addData("Id", "19 right");
-                }
+                    drive.followTrajectorySequence(Right3Parking);}
 
                 if(tagFound)
                 {

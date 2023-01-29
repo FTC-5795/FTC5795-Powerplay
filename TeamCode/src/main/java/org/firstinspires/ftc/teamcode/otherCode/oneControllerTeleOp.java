@@ -113,7 +113,7 @@ public class oneControllerTeleOp extends LinearOpMode {
             //function classes
             coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad1.a);
-            vSlideMotor.vSlide(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.x);
+            //vSlideMotor.vSlide(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.x, );
 
             //Bot Drift Issues (Not NFS Drifting)
             fLPower *= 1;
