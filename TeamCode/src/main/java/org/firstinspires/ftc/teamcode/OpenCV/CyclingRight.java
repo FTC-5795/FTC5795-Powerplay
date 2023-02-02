@@ -21,7 +21,7 @@ public class CyclingRight extends LinearOpMode {
     private ElapsedTime autoTimer = new ElapsedTime();
     private ElapsedTime sleepTimer = new ElapsedTime();
     private int slideLevel; //1-12 slide height adjustment in trajectories
-    private static double poleDepth = 3; //inches forward/back bot will move when scoring
+    private static double poleDepth = 2; //inches forward/back bot will move when scoring
     private int stackHeight = 9; //begins with stack of 5
     private int parkLocation = 0; //1,2,3 from left to right
 
@@ -41,7 +41,7 @@ public class CyclingRight extends LinearOpMode {
 
     Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270));
     Pose2d rightPrimaryPose = new Pose2d(-20, 13, Math.toRadians(270));
-    Pose2d rightStackPose = new Pose2d(-57.5,10.5, Math.toRadians(180));
+    Pose2d rightStackPose = new Pose2d(-58.25,9, Math.toRadians(180));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,7 +57,7 @@ public class CyclingRight extends LinearOpMode {
                     grab.autoGrip(true);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.3, () -> {
-                    slideLevel = 1;
+                    slideLevel = 2;
                 })
                 .strafeRight(2.5)
                 .build();
@@ -104,7 +104,7 @@ public class CyclingRight extends LinearOpMode {
                 .build();
 
         TrajectorySequence Parking3 = drive.trajectorySequenceBuilder(rightPrimaryPose)
-                .lineToSplineHeading(new Pose2d(-58,14.5, Math.toRadians(270)))
+                .lineToSplineHeading(new Pose2d(-56.5,14.5, Math.toRadians(270)))
                 .back(16)
                 .build();
 
@@ -188,6 +188,12 @@ public class CyclingRight extends LinearOpMode {
                     while (sleepTimer.seconds() < 1) {
                         grab.autoGrip(true);
                     }
+                    sleepTimer.reset();
+                    while (sleepTimer.seconds() < 0.18) {
+                        drive.setMotorPowers(-0.2,-0.2,-0.2,-0.2);
+                        drive.update();
+                    }
+                    drive.setMotorPowers(0,0,0,0);
                     sleepTimer.reset();
                     while (sleepTimer.seconds() < 1) {
                         slide.autoVSlide(10);

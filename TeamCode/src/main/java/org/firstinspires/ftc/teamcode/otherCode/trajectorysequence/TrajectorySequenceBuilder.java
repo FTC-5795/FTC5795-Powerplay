@@ -144,7 +144,7 @@ public class TrajectorySequenceBuilder {
         return addPath(() -> currentTrajectoryBuilder.lineToConstantHeading(endPosition, velConstraint, accelConstraint));
     }
 
-    public TrajectorySequenceBuilder lineToLinearHeading(Pose2d endPose) {
+    public TrajectorySequenceBuilder lineToLinearHeading(Pose2d endPose, double v) {
         return addPath(() -> currentTrajectoryBuilder.lineToLinearHeading(endPose, currentVelConstraint, currentAccelConstraint));
     }
 
