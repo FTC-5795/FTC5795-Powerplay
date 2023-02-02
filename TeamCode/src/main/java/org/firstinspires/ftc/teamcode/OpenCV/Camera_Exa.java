@@ -39,7 +39,6 @@ import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 
 import java.util.ArrayList;
 
-@Autonomous
 public class Camera_Exa extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -107,6 +106,12 @@ public class Camera_Exa extends LinearOpMode {
          */
 
         waitForStart();
+        if (tagOfInterest != null) {
+            telemetry.addLine("Tag snapshot:\n");
+            tagToTelemetry(tagOfInterest);
+        } else {
+            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+        }
 
         while (opModeIsActive()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();

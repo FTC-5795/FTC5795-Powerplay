@@ -83,15 +83,15 @@ public class vSlideMotorController {
             spamLockDOWN = false;
         }
 
-        if (targetLevel < 10 && targetLevel % 2 == 0 && lowerVerticalPower > -0.05) {
+        target = targetLevelConversion(targetLevel); //converts to encoder tick value
+        positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
+
+        if (targetLevel < 10 && targetLevel % 2 == 0 && state1 - target < 50) {
             grab = 1;
         }
         else {
             grab = 0;
         }
-
-        target = targetLevelConversion(targetLevel); //converts to encoder tick value
-        positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
 
         if (target < 0) {
             target = 0;
@@ -175,7 +175,7 @@ public class vSlideMotorController {
             return 620;
         } //stack of 5 (down)
         else if (targetLevel == 9) {
-            return 950;
+            return 975;
         } //stack of 5 (up)
         else if (targetLevel == 10) {
             return 1580;
@@ -224,9 +224,9 @@ public class vSlideMotorController {
     }
 
     public void positionalAdjustmentProfile(double tDOWN, double tUP) {
-        double adjustmentFactor = 120 * (tUP - tDOWN);
+        double adjustmentFactor = 150 * (tUP - tDOWN);
         target += adjustmentFactor;
-    } //adjusts up to 120 encoder ticks up/down
+    } //adjusts up to 150 encoder ticks up/down
 
     //Automatic slide function
     public void autoVSlide(int targetLevel) {
