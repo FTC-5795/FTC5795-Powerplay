@@ -47,10 +47,8 @@ public class MeepMeepEngine2 {
                                 .lineToSplineHeading(new Pose2d(-25,12, Math.toRadians(270)))
                                 .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
                                 .splineToLinearHeading(rightStackPose, Math.toRadians(0))
-                                .back(12)
-                                .lineToSplineHeading(rightPrimaryPose)
-                                .forward(poleDepth)
-                                .back(poleDepth)
+                                .back(30)
+                                .lineToSplineHeading(new Pose2d(-10,14.5, Math.toRadians(270)))
                                 .build()
                 );
 

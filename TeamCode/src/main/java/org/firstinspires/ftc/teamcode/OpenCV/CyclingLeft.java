@@ -21,7 +21,7 @@ public class CyclingLeft extends LinearOpMode {
     private ElapsedTime autoTimer = new ElapsedTime();
     private ElapsedTime sleepTimer = new ElapsedTime();
     private int slideLevel; //1-12 slide height adjustment in trajectories
-    private static double poleDepth = 3; //inches forward/back bot will move when scoring
+    private static double poleDepth = 2; //inches forward/back bot will move when scoring
     private int stackHeight = 9; //begins with stack of 5
     private int parkLocation = 0; //1,2,3 from left to right
 
@@ -33,7 +33,8 @@ public class CyclingLeft extends LinearOpMode {
         SCORE_WAIT, //Checks for drive.busy
         FROM_STACK_TRAJECTORY, //Bot goes back to primary pose
         STACK_WAIT, //Checks for drive.busy
-        PARK, //Parks depending on results from Open CV
+        PARK, //Parks from leftPrimaryPose depending on results from Open CV
+        PARK_2, //Parks with preloaded cone
         IDLE
     }
 
@@ -41,7 +42,7 @@ public class CyclingLeft extends LinearOpMode {
 
     Pose2d leftStartPose = new Pose2d(30, 61.5, Math.toRadians(270));
     Pose2d leftPrimaryPose = new Pose2d(20, 13, Math.toRadians(270));
-    Pose2d leftStackPose = new Pose2d(57.5,10.5, Math.toRadians(0));
+    Pose2d leftStackPose = new Pose2d(58.25,9, Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,7 +58,7 @@ public class CyclingLeft extends LinearOpMode {
                     grab.autoGrip(true);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.3, () -> {
-                    slideLevel = 1;
+                    slideLevel = 2;
                 })
                 .strafeLeft(2.5)
                 .build();
@@ -94,18 +95,47 @@ public class CyclingLeft extends LinearOpMode {
                 .build(); //returns from cone stack
 
         TrajectorySequence Parking1 = drive.trajectorySequenceBuilder(leftPrimaryPose)
-                .lineToSplineHeading(new Pose2d(58,14.5, Math.toRadians(270)))
-                .back(16)
+                .lineToSplineHeading(new Pose2d(56.5,14.5, Math.toRadians(270)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
+                .build();
+
+        TrajectorySequence preParking1 = drive.trajectorySequenceBuilder(leftStackPose)
+                .lineToSplineHeading(new Pose2d(56.5,14.5, Math.toRadians(270)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
                 .build();
 
         TrajectorySequence Parking2 = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .lineToSplineHeading(new Pose2d(35,12, Math.toRadians(270)))
-                .back(16)
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
+                .build();
+
+        TrajectorySequence preParking2 = drive.trajectorySequenceBuilder(leftStackPose)
+                .back(15)
+                .lineToSplineHeading(new Pose2d(35,12, Math.toRadians(270)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
                 .build();
 
         TrajectorySequence Parking3 = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .lineToSplineHeading(new Pose2d(10,14.5, Math.toRadians(270)))
-                .back(16)
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
+                .build();
+
+        TrajectorySequence preParking3 = drive.trajectorySequenceBuilder(leftStackPose)
+                .back(30)
+                .lineToSplineHeading(new Pose2d(10,14.5, Math.toRadians(270)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.675, () -> {
+                    slideLevel = 0;
+                })
                 .build();
 
         grab.autoGrip(true);
@@ -122,7 +152,7 @@ public class CyclingLeft extends LinearOpMode {
             switch (state) {
                 case INITIAL:
                     if (!drive.isBusy()) {
-                        while (parkLocation == 0) {
+                        while (parkLocation == 0 && autoTimer.seconds() < 5) {
                             parkLocation = vision.camera();
                             grab.autoGrip(true);
                             slide.autoVSlide(1);
@@ -164,7 +194,7 @@ public class CyclingLeft extends LinearOpMode {
                     if (stackHeight < 1) {
                         state = State.PARK;
                     }
-                    else if (autoTimer.seconds() < 15) {
+                    else if (autoTimer.seconds() < 20) {
                         state = State.STACK_WAIT;
                         drive.followTrajectorySequenceAsync(toStackTrajectory);
                     }
@@ -189,13 +219,24 @@ public class CyclingLeft extends LinearOpMode {
                         grab.autoGrip(true);
                     }
                     sleepTimer.reset();
+                    while (sleepTimer.seconds() < 0.2) {
+                        drive.setMotorPowers(-0.2,-0.2,-0.2,-0.2);
+                        drive.update();
+                    }
+                    drive.setMotorPowers(0,0,0,0);
+                    sleepTimer.reset();
                     while (sleepTimer.seconds() < 0.8) {
                         slide.autoVSlide(10);
                     }
                     slideLevel = 10;
                     stackHeight -= 2;
-                    drive.followTrajectorySequenceAsync(fromStackTrajectory);
-                    state = State.START_TRAJECTORY;
+                    if (autoTimer.seconds() < 20) {
+                        drive.followTrajectorySequenceAsync(fromStackTrajectory);
+                        state = State.START_TRAJECTORY;
+                    }
+                    else {
+                        state = State.PARK_2;
+                    }
                     break;
 
                 case PARK:
@@ -203,13 +244,28 @@ public class CyclingLeft extends LinearOpMode {
                         state = State.IDLE;
                         drive.followTrajectorySequenceAsync(Parking1);
                     }
-                    else if (parkLocation == 2) {
+                    else if (parkLocation == 2 || parkLocation == 0) {
                         state = State.IDLE;
                         drive.followTrajectorySequenceAsync(Parking2);
                     }
                     else if (parkLocation == 3) {
                         state = State.IDLE;
                         drive.followTrajectorySequenceAsync(Parking3);
+                    }
+                    break;
+
+                case PARK_2:
+                    if (parkLocation == 1) {
+                        state = CyclingLeft.State.IDLE;
+                        drive.followTrajectorySequenceAsync(preParking1);
+                    }
+                    else if (parkLocation == 2 || parkLocation == 0) {
+                        state = CyclingLeft.State.IDLE;
+                        drive.followTrajectorySequenceAsync(preParking2);
+                    }
+                    else if (parkLocation == 3) {
+                        state = CyclingLeft.State.IDLE;
+                        drive.followTrajectorySequenceAsync(preParking3);
                     }
                     break;
             }

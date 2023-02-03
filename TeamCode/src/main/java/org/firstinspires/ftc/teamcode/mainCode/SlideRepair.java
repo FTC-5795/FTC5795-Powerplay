@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.otherCode.diagnostics;
+package org.firstinspires.ftc.teamcode.mainCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -11,18 +10,17 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Disabled
 @TeleOp
-public class verticalDiagnostic extends LinearOpMode {
+public class SlideRepair extends LinearOpMode {
 
     private DcMotorEx lowerVerticalMotor, upperVerticalMotor;
     private DistanceSensor distanceSensor;
     private ColorSensor colorSensor;
     private double vSlidePower;
-    boolean lower, upper;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         lowerVerticalMotor = hardwareMap.get(DcMotorEx.class, "lowerVerticalMotor");
         lowerVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lowerVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -42,55 +40,26 @@ public class verticalDiagnostic extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (gamepad1.dpad_down) {
-                vSlidePower = -0.25;
+            if (gamepad1.dpad_down || gamepad2.dpad_down) {
+                vSlidePower = -0.35;
             }
-            else if (gamepad1.dpad_up) {
-                vSlidePower = 0.25;
+            else if (gamepad1.dpad_up || gamepad2.dpad_up) {
+                vSlidePower = 0.35;
             }
             else {
                 vSlidePower = 0.00;
             }
 
-            if (gamepad1.a) {
-                lower = true;
-                upper = false;
-                telemetry.addLine("lower");
-            }
-            else if (gamepad1.b) {
-                lower = true;
-                upper = true;
-                telemetry.addLine("both");
-            }
-            else if (gamepad1.y) {
-                lower = false;
-                upper = true;
-                telemetry.addLine("upper");
-            }
-
-            if (lower) {
-                lowerVerticalMotor.setPower(vSlidePower);
-            }
-            else {
-                lowerVerticalMotor.setPower(0);
-            }
-
-            if (upper) {
-                upperVerticalMotor.setPower(vSlidePower);
-            }
-            else {
-                upperVerticalMotor.setPower(0);
-            }
+            lowerVerticalMotor.setPower(vSlidePower);
+            upperVerticalMotor.setPower(vSlidePower);
 
             telemetry.addData("sensorDistance in MM", distanceSensor.getDistance(DistanceUnit.MM));
             telemetry.addData("sensorBlue", colorSensor.blue());
             telemetry.addData("sensorRed", colorSensor.red());
             telemetry.addData("sensorGreen", colorSensor.green());
-
             telemetry.addData("lowerPosition", lowerVerticalMotor.getCurrentPosition());
             telemetry.addData("upperPosition", upperVerticalMotor.getCurrentPosition());
             telemetry.update();
-
         }
     }
 }

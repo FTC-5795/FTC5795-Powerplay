@@ -341,4 +341,8 @@ public class DeluxeTeleOp extends LinearOpMode {
             slideReset = false;
         }
     }
+
+    public void auto() {
+
+    }
 }

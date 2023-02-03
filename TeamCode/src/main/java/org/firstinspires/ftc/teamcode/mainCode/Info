@@ -44,9 +44,9 @@ Autonomous:
     Odometry:
     -All functions tuned with three dead wheel tracking
     Roadrunner:
-    -Finite State Machine //TODO: Tuning
+    -Finite State Machine
     -Camera EXA left/right tuned for parking
-    -TODO: In Progress
+    -Basic cycle autos for left and right
 
 Other function classes:
     -coneServoController (only tele-Op)
