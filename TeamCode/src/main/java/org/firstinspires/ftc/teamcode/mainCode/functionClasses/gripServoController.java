@@ -29,7 +29,7 @@ public class gripServoController {
     public void toggle() {
 
         if (armDown) {
-            gripServo.setPosition(0.88);
+            gripServo.setPosition(0.9);
         }
         else {
             gripServo.setPosition(0.75);

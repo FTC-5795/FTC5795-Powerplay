@@ -21,7 +21,7 @@ public class CyclingRight extends LinearOpMode {
     private ElapsedTime autoTimer = new ElapsedTime();
     private ElapsedTime sleepTimer = new ElapsedTime();
     private int slideLevel; //1-12 slide height adjustment in trajectories
-    private static double poleDepth = 2; //inches forward/back bot will move when scoring
+    private static double poleDepth = 4; //inches forward/back bot will move when scoring
     private int stackHeight = 9; //begins with stack of 5
     private int parkLocation = 0; //1,2,3 from left to right
 
@@ -40,9 +40,9 @@ public class CyclingRight extends LinearOpMode {
 
     State state = State.IDLE;
 
-    Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270));
+    Pose2d rightStartPose = new Pose2d(-31, 61.5, Math.toRadians(270));
     Pose2d rightPrimaryPose = new Pose2d(-20, 13, Math.toRadians(270));
-    Pose2d rightStackPose = new Pose2d(-58.25,9, Math.toRadians(180));
+    Pose2d rightStackPose = new Pose2d(-56,9, Math.toRadians(180));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -60,7 +60,7 @@ public class CyclingRight extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.3, () -> {
                     slideLevel = 2;
                 })
-                .strafeRight(2.5)
+                .strafeRight(1.5)
                 .build();
 
         TrajectorySequence startTrajectory = drive.trajectorySequenceBuilder(initialTrajectory.end())
@@ -139,6 +139,9 @@ public class CyclingRight extends LinearOpMode {
                 .build();
 
         grab.autoGrip(true);
+
+        telemetry.addLine("Ready");
+        telemetry.update();
 
         waitForStart();
         if (isStopRequested()) return;
@@ -230,7 +233,7 @@ public class CyclingRight extends LinearOpMode {
                     }
                     slideLevel = 10;
                     stackHeight -= 2;
-                    if (autoTimer.seconds() < 20) {
+                    if (autoTimer.seconds() < 16) {
                         drive.followTrajectorySequenceAsync(fromStackTrajectory);
                         state = CyclingRight.State.START_TRAJECTORY;
                     }
@@ -269,6 +272,9 @@ public class CyclingRight extends LinearOpMode {
                     }
                     break;
             }
+
+            telemetry.addData("State", state);
+            telemetry.update();
 
             drive.update();
             slide.autoVSlide(slideLevel);

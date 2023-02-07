@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mainCode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,6 +20,7 @@ Features included are moving (duh), drift (left bumper), 90-degree locked rotati
 Function classes include vertical slide, cone upright servo, grip servo, and botLock.
 */
 
+@Config
 @TeleOp
 
 public class DeluxeTeleOp extends LinearOpMode {
@@ -40,9 +42,9 @@ public class DeluxeTeleOp extends LinearOpMode {
 
     //PID variables
     private double integralSum = 0, derivative, error = 0, previousError; //for PID control (dynamic)
-    private static double Kp = 2.5; //Proportional Gain (for more power)
-    private static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
-    private static double Ki = 0; //Integral Gain (steady state error)
+    public static double Kp = 2.5; //Proportional Gain (for more power)
+    public static double Kd = 1; //Derivative Gain (increase to prevent overshoot)
+    public static double Ki = 0; //Integral Gain (steady state error)
 
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime timer2 = new ElapsedTime();
@@ -128,7 +130,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             slideReset();
 
             //function classes
-            coneServo.cone(gamepad1.b);
+//            coneServo.cone(gamepad1.b);
             gripServo.grip(gamepad2.left_bumper);
 
             if (vSlideMotor.autoGrab() == 1) {
@@ -293,9 +295,9 @@ public class DeluxeTeleOp extends LinearOpMode {
 
             if ((Math.abs(gamepad1.left_stick_x) + Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.right_stick_y)) < 0.1) {
                 fLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                fRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                bLPower = -PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
-                bRPower = PIDControl(Math.toRadians(targetAngle), Math.toRadians(orientation));
+                fRPower = -fLPower;
+                bLPower = fLPower;
+                bRPower = -fLPower;
                 x = 0; //for denominator code
                 y = 0; //for denominator code
             }

@@ -4,9 +4,12 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 //Vertical slide motor controls (Using PID) (Start slides retracted with tension on both motors)
 //Spool diameter: 2" | PPR: 134.4
@@ -21,7 +24,7 @@ public class vSlideMotorController {
     private int previousTargetLevel = 0; //previous targetLevel
     private double target = 0; //target height of slides in ticks
     private boolean spamLockUP, spamLockDOWN, spamLockReset;
-    private ColorSensor sensor;
+    private DistanceSensor sensor;
 
     //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
@@ -43,7 +46,7 @@ public class vSlideMotorController {
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        sensor = hardwareMap.get(ColorSensor.class, "sensor");
+        sensor = hardwareMap.get(DistanceSensor.class, "sensor");
     }
 
     public void vSlide(boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
@@ -86,7 +89,7 @@ public class vSlideMotorController {
         target = targetLevelConversion(targetLevel); //converts to encoder tick value
         positionalAdjustmentProfile(tDOWN, tUP); //manual adjustment of slides using triggers
 
-        if (targetLevel < 10 && targetLevel % 2 == 0 && state1 - target < 50) {
+        if (targetLevel < 10 && targetLevel % 2 == 0 && state1 - target < 250) {
             grab = 1;
         }
         else {
@@ -205,9 +208,9 @@ public class vSlideMotorController {
             upperVerticalMotor.setPower(upperVerticalPower);
         } //gets slides close to reset region
 
-        while (sensor.red() < 100) {
-            lowerVerticalMotor.setPower(-0.05);
-            upperVerticalMotor.setPower(-0.05);
+        while (sensor.getDistance(DistanceUnit.MM) < 20) {
+            lowerVerticalMotor.setPower(-0.2);
+            upperVerticalMotor.setPower(-0.2);
         } //fine tunes reset
         lowerVerticalMotor.setPower(0);
         upperVerticalMotor.setPower(0);

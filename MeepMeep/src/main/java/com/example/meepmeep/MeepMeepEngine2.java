@@ -24,31 +24,11 @@ public class MeepMeepEngine2 {
 
         RoadRunnerBotEntity rightCycle = new DefaultBotBuilder(meepMeep)
                 .setColorScheme(new ColorSchemeRedLight())
-                .setConstraints(52, 52, Math.toRadians(296), Math.toRadians(296), 11.735)
-                .setDimensions(13.5, 17)
+                .setConstraints(52, 52, Math.toRadians(296), Math.toRadians(296), 12.65)
+                .setDimensions(13.5, 17.25)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(rightStartPose)
-                                .splineToLinearHeading(rightPrimaryPose, 0)
-                                .forward(poleDepth)
-                                .back(poleDepth)
-//                                .lineToSplineHeading(new Pose2d(-25,12, Math.toRadians(270)))
-//                                .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
-//                                .splineToLinearHeading(rightStackPose, Math.toRadians(0))
-//                                .back(12)
-//                                .lineToSplineHeading(rightPrimaryPose)
-//                                .forward(poleDepth)
-//                                .back(poleDepth)
-                                .lineToSplineHeading(new Pose2d(-30,12, Math.toRadians(180)))
-                                .splineToLinearHeading(rightStackPose, Math.toRadians(180))
-                                .back(12)
-                                .lineToSplineHeading(rightPrimaryPose)
-                                .forward(poleDepth)
-                                .back(poleDepth)
-                                .lineToSplineHeading(new Pose2d(-25,12, Math.toRadians(270)))
-                                .lineToSplineHeading(new Pose2d(-40,12, Math.toRadians(180)))
-                                .splineToLinearHeading(rightStackPose, Math.toRadians(0))
-                                .back(30)
-                                .lineToSplineHeading(new Pose2d(-10,14.5, Math.toRadians(270)))
+                                .splineToSplineHeading(new Pose2d(-30,5,Math.toRadians(315)), Math.toRadians(315))
                                 .build()
                 );
 
@@ -90,7 +70,7 @@ public class MeepMeepEngine2 {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(rightCycle)
-                .addEntity(leftCycle)
+//                .addEntity(leftCycle)
                 .start();
     }
 }
