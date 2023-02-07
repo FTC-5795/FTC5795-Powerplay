@@ -16,8 +16,8 @@ public class MeepMeepEngine2 {
         double poleDepth = 2;
 
         Pose2d rightStartPose = new Pose2d(-35, 61.5, Math.toRadians(270));
-        Pose2d rightPrimaryPose = new Pose2d(-29, 5.75, Math.toRadians(-45));
-        Pose2d rightStackPose = new Pose2d(-55,10.5, Math.toRadians(180));
+        Pose2d rightPrimaryPose = new Pose2d(-26, 7.25, Math.toRadians(-45));
+        Pose2d rightStackPose = new Pose2d(-48,12, Math.toRadians(180));
 
         Pose2d leftStartPose = new Pose2d(35, 61.5, Math.toRadians(270));
         Pose2d leftPrimaryPose = new Pose2d(20, 12, Math.toRadians(270));
@@ -32,6 +32,7 @@ public class MeepMeepEngine2 {
                         drive.trajectorySequenceBuilder(rightStartPose)
                                 .forward(34)
                                 .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
+                                .splineToSplineHeading(rightStackPose, Math.toRadians(315))
                                 .build()
 
                 );
