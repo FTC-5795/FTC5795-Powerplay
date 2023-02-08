@@ -18,9 +18,12 @@ public class MeepMeepEngine2 {
         Pose2d rightStartPose = new Pose2d(-35, 61.5, Math.toRadians(270));
 
         Pose2d rightPrimaryPose = new Pose2d(-29, 5.75, Math.toRadians(-45));
-        Vector2d rightMiddlePose2 = new Vector2d(-60, 12);
-        Pose2d rightMiddlePose = new Pose2d(-36, 12, Math.toRadians(180));
-        Pose2d rightStackPose = new Pose2d(-63,12, Math.toRadians(180));
+        Vector2d rightMiddlePose2 = new Vector2d(-40, 12);
+        Pose2d rightMiddlePose = new Pose2d(-40, 12, Math.toRadians(180));
+//        Pose2d rightStackPose = new Pose2d(-63,12, Math.toRadians(180));
+        Vector2d rightStackPose = new Vector2d(-63,12);
+        Pose2d rightStackPose1 = new Pose2d(-63,12, Math.toRadians(180));
+
 
         Pose2d leftStartPose = new Pose2d(35, 61.5, Math.toRadians(270));
         Pose2d leftPrimaryPose = new Pose2d(20, 12, Math.toRadians(270));
@@ -37,10 +40,10 @@ public class MeepMeepEngine2 {
                                 .forward(34)
                                 .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
                                     //slides can go down about halfway through the linetosplineheading
-                                .lineToSplineHeading(rightMiddlePose)
-                                .lineToSplineHeading(rightStackPose)
-                                .lineToSplineHeading(rightMiddlePose)
-                                .lineToSplineHeading(rightPrimaryPose)
+                                .splineToSplineHeading(rightMiddlePose, Math.toRadians(327))
+                                .splineToConstantHeading(rightStackPose, Math.toRadians(200))
+//                                .lineToSplineHeading(rightMiddlePose)
+//                                .lineToSplineHeading(rightPrimaryPose)
                                 .build()
 
                 );
@@ -53,3 +56,21 @@ public class MeepMeepEngine2 {
                 .start();
     }
 }
+//    RoadRunnerBotEntity rightCycle = new DefaultBotBuilder(meepMeep)
+//            // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//            .setColorScheme(new ColorSchemeBlueLight())
+//            .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+//            .setDimensions(13.5, 17)
+//            .followTrajectorySequence(drive ->
+//                    drive.trajectorySequenceBuilder(rightStartPose)
+//                            //slides go up during forward sequence
+//                            .forward(34)
+//                            .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
+//                            //slides can go down about halfway through the linetosplineheading
+//                            .lineToSplineHeading(rightMiddlePose)
+//                            .lineToSplineHeading(rightStackPose)
+//                            .lineToSplineHeading(rightMiddlePose)
+//                            .lineToSplineHeading(rightPrimaryPose)
+//                            .build()
+//
+//            );
