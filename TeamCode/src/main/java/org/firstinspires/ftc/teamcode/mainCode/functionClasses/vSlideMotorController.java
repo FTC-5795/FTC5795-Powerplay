@@ -24,7 +24,8 @@ public class vSlideMotorController {
     private int previousTargetLevel = 0; //previous targetLevel
     private double target = 0; //target height of slides in ticks
     private boolean spamLockUP, spamLockDOWN, spamLockReset;
-    private DistanceSensor sensor;
+    private DistanceSensor dSensor;
+    private ColorSensor cSensor;
 
     //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
@@ -46,7 +47,8 @@ public class vSlideMotorController {
         upperVerticalMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upperVerticalMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        sensor = hardwareMap.get(DistanceSensor.class, "sensor");
+        dSensor = hardwareMap.get(DistanceSensor.class, "sensor");
+        cSensor = hardwareMap.get(ColorSensor.class, "sensor");
     }
 
     public void vSlide(boolean dUP, boolean dDOWN, int grabPosition, boolean slideReset, double tDOWN, double tUP) {
@@ -199,21 +201,21 @@ public class vSlideMotorController {
         double state1 = -lowerVerticalMotor.getCurrentPosition();
         double state2 = upperVerticalMotor.getCurrentPosition();
 
-        while (state1 > 50 && state2 > 50) {
-            state1 = -lowerVerticalMotor.getCurrentPosition();
-            state2 = upperVerticalMotor.getCurrentPosition();
-            lowerVerticalPower = PIDControl1(0, state1);
-            upperVerticalPower = PIDControl2(0, state2);
-            lowerVerticalMotor.setPower(lowerVerticalPower);
-            upperVerticalMotor.setPower(upperVerticalPower);
-        } //gets slides close to reset region
-
-        while (sensor.getDistance(DistanceUnit.MM) < 20) {
+        while (dSensor.getDistance(DistanceUnit.MM) > 55) {
+            lowerVerticalMotor.setPower(-0.5);
+            upperVerticalMotor.setPower(-0.5);
+        } //stage 1 reset
+        while (cSensor.blue() < 150) {
             lowerVerticalMotor.setPower(-0.2);
             upperVerticalMotor.setPower(-0.2);
-        } //fine tunes reset
+        } //stage 2 reset (fine tune)
+        while (dSensor.getDistance(DistanceUnit.MM) > 22) {
+            lowerVerticalMotor.setPower(-0.1);
+            upperVerticalMotor.setPower(-0.1);
+        } //stage 3 reset (ultra fine tune)
         lowerVerticalMotor.setPower(0);
         upperVerticalMotor.setPower(0);
+        targetLevel = 0;
 
         lowerVerticalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lowerVerticalMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

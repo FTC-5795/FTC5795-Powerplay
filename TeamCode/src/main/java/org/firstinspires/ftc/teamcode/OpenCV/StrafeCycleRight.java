@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.OpenCV.cameraCode.cameraController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySeq
 //or REPEAT_1 -> Park at end
 
 @Autonomous
-public class CyclingRight extends LinearOpMode {
+public class StrafeCycleRight extends LinearOpMode {
 
     private ElapsedTime autoTimer = new ElapsedTime();
     private ElapsedTime sleepTimer = new ElapsedTime();
@@ -235,10 +236,10 @@ public class CyclingRight extends LinearOpMode {
                     stackHeight -= 2;
                     if (autoTimer.seconds() < 16) {
                         drive.followTrajectorySequenceAsync(fromStackTrajectory);
-                        state = CyclingRight.State.START_TRAJECTORY;
+                        state = StrafeCycleRight.State.START_TRAJECTORY;
                     }
                     else {
-                        state = CyclingRight.State.PARK_2;
+                        state = StrafeCycleRight.State.PARK_2;
                     }
                     break;
 

@@ -2,9 +2,8 @@ package org.firstinspires.ftc.teamcode.otherCode.diagnostics;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.OpenCV.cameraController;
+import org.firstinspires.ftc.teamcode.OpenCV.cameraCode.cameraController;
 
 @Autonomous
 public class cameraControllerDiagnostic extends LinearOpMode {

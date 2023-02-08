@@ -337,7 +337,7 @@ public class DeluxeTeleOp extends LinearOpMode {
 
     public void slideReset() {
         if (gamepad2.left_stick_button && gamepad2.right_stick_button) {
-            //slideReset = true;
+            slideReset = true;
         }
         else {
             slideReset = false;

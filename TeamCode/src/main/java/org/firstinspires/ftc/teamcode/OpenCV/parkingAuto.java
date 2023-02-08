@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.OpenCV;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.OpenCV.cameraCode.cameraController;
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequenceBuilder;
-
-import java.net.PortUnreachableException;
 
 public class parkingAuto extends LinearOpMode {
 
