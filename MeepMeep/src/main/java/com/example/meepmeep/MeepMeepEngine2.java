@@ -15,7 +15,7 @@ public class MeepMeepEngine2 {
 
         double poleDepth = 2;
 
-        Pose2d rightStartPose = new Pose2d(-35, 61.5, Math.toRadians(270));
+        Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270));
 
         Pose2d rightPrimaryPose = new Pose2d(-29, 5.75, Math.toRadians(-45));
         Vector2d rightMiddlePose2 = new Vector2d(-40, 12);
@@ -37,13 +37,14 @@ public class MeepMeepEngine2 {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(rightStartPose)
                                 //slides go up during forward sequence
-                                .forward(34)
+                                .splineToConstantHeading(new Vector2d(-35, 55), Math.toRadians(270))
+                                .forward(27.5)
                                 .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
                                     //slides can go down about halfway through the linetosplineheading
                                 .splineToSplineHeading(rightMiddlePose, Math.toRadians(327))
                                 .splineToConstantHeading(rightStackPose, Math.toRadians(200))
-//                                .lineToSplineHeading(rightMiddlePose)
-//                                .lineToSplineHeading(rightPrimaryPose)
+                                .lineToSplineHeading(rightMiddlePose)
+                                .lineToSplineHeading(rightPrimaryPose)
                                 .build()
 
                 );

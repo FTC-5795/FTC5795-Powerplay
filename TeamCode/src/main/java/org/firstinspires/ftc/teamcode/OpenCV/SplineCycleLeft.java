@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorContro
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
 
-public class SplineCycleRight extends LinearOpMode {
+public class SplineCycleLeft extends LinearOpMode {
 
     private ElapsedTime autoTimer = new ElapsedTime();
     private ElapsedTime sleepTimer = new ElapsedTime();
@@ -31,10 +31,10 @@ public class SplineCycleRight extends LinearOpMode {
 
     State state = State.IDLE;
 
-    Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270)); //center of square
-    Pose2d rightPrimaryPose = new Pose2d(-26, 7.25, Math.toRadians(315));
-    Pose2d rightStackPose = new Pose2d(-48,12, Math.toRadians(180));
-    Pose2d rightMiddlePose = new Pose2d(-44,12,Math.toRadians(180));
+    Pose2d leftStartPose = new Pose2d(30, 61.5, Math.toRadians(270)); //center of square
+    Pose2d leftPrimaryPose = new Pose2d(26, 7.25, Math.toRadians(225));
+    Pose2d leftStackPose = new Pose2d(48,12, Math.toRadians(0));
+    Pose2d leftMiddlePose = new Pose2d(44,12,Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -43,64 +43,64 @@ public class SplineCycleRight extends LinearOpMode {
         gripServoController grab = new gripServoController(hardwareMap);
         cameraController vision = new cameraController(hardwareMap);
 
-        TrajectorySequence initialTraj = drive.trajectorySequenceBuilder(rightStartPose)
-                .splineToConstantHeading(new Vector2d(-35, 55), Math.toRadians(270))
+        TrajectorySequence initialTraj = drive.trajectorySequenceBuilder(leftStartPose)
+                .splineToConstantHeading(new Vector2d(35, 55), Math.toRadians(270))
                 .forward(27.5)
-                .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
+                .splineToSplineHeading(leftPrimaryPose, Math.toRadians(225))
                 .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> {
                     slideLevel = 12;
-                })
+                }) //From initial position to primary pose
                 .build();
 
-        TrajectorySequence toStackTraj = drive.trajectorySequenceBuilder(rightPrimaryPose)
+        TrajectorySequence toStackTraj = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> {
                     slideLevel = stackHeight;
                 })
-                .splineToSplineHeading(rightMiddlePose, Math.toRadians(180))
-                .splineToLinearHeading(rightStackPose, Math.toRadians(180))
+                .splineToSplineHeading(leftMiddlePose, Math.toRadians(0))
+                .splineToLinearHeading(leftStackPose, Math.toRadians(0))
                 .setReversed(false)
                 .build();
 
-        TrajectorySequence fromStackTraj = drive.trajectorySequenceBuilder(rightStackPose)
-                .splineToLinearHeading(rightMiddlePose, Math.toRadians(0))
-                .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
+        TrajectorySequence fromStackTraj = drive.trajectorySequenceBuilder(leftStackPose)
+                .splineToLinearHeading(leftMiddlePose, Math.toRadians(180))
+                .splineToSplineHeading(leftPrimaryPose, Math.toRadians(225))
                 .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> {
                     slideLevel = 12;
                 })
                 .build();
 
-        TrajectorySequence primaryPark1 = drive.trajectorySequenceBuilder(rightPrimaryPose)
+        TrajectorySequence primaryPark1 = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .setReversed(true)
-                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
-                .strafeLeft(30)
+                .splineToSplineHeading(new Pose2d(40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeLeft(16)
                 .build(); //Park location 1 from primary pose
 
-        TrajectorySequence primaryPark2 = drive.trajectorySequenceBuilder(rightPrimaryPose)
+        TrajectorySequence primaryPark2 = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .setReversed(true)
-                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
-                .strafeLeft(5)
+                .splineToSplineHeading(new Pose2d(40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeRight(5)
                 .build(); //Park location 2 from primary pose
 
-        TrajectorySequence primaryPark3 = drive.trajectorySequenceBuilder(rightPrimaryPose)
+        TrajectorySequence primaryPark3 = drive.trajectorySequenceBuilder(leftPrimaryPose)
                 .setReversed(true)
-                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
-                .strafeRight(16)
+                .splineToSplineHeading(new Pose2d(40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeRight(30)
                 .build(); //Park location 3 from primary pose
 
-        TrajectorySequence secondaryPark1 = drive.trajectorySequenceBuilder(rightStackPose)
+        TrajectorySequence secondaryPark1 = drive.trajectorySequenceBuilder(leftStackPose)
 
                 .build(); //Park location 1 from stack pose
 
-        TrajectorySequence secondaryPark2 = drive.trajectorySequenceBuilder(rightStackPose)
+        TrajectorySequence secondaryPark2 = drive.trajectorySequenceBuilder(leftStackPose)
 
                 .build(); //Park location 2 from stack pose
 
-        TrajectorySequence secondaryPark3 = drive.trajectorySequenceBuilder(rightStackPose)
+        TrajectorySequence secondaryPark3 = drive.trajectorySequenceBuilder(leftStackPose)
 
                 .build(); //Park location 3 from stack pose
 
-        drive.setPoseEstimate(rightStartPose);
+        drive.setPoseEstimate(leftStartPose);
         grab.autoGrip(true);
 
         while(opModeInInit()) {
@@ -137,7 +137,7 @@ public class SplineCycleRight extends LinearOpMode {
                     break;
 
                 case REPEAT:
-                    if (autoTimer.seconds() < 22) {
+                    if (autoTimer.seconds() < 22 && stackHeight > 0) {
                         drive.followTrajectorySequenceAsync(toStackTraj);
                         state = State.TO_STACK;
                     }
