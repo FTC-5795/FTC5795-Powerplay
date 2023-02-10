@@ -41,7 +41,7 @@ public class MeepMeepEngine2 {
                                 .forward(27.5)
                                 .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
                                     //slides can go down about halfway through the linetosplineheading
-                                .splineToSplineHeading(rightMiddlePose, Math.toRadians(327))
+                                .back(5)
                                 .splineToConstantHeading(rightStackPose, Math.toRadians(200))
                                 .lineToSplineHeading(rightMiddlePose)
                                 .lineToSplineHeading(rightPrimaryPose)

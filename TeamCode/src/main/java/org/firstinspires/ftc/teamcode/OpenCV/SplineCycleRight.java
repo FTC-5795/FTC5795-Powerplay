@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpenCV;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorContro
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySequence;
 
+@Autonomous
 public class SplineCycleRight extends LinearOpMode {
 
     private ElapsedTime autoTimer = new ElapsedTime();
@@ -32,9 +34,9 @@ public class SplineCycleRight extends LinearOpMode {
     State state = State.IDLE;
 
     Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270)); //center of square
-    Pose2d rightPrimaryPose = new Pose2d(-26, 7.25, Math.toRadians(315));
-    Pose2d rightStackPose = new Pose2d(-48,12, Math.toRadians(180));
-    Pose2d rightMiddlePose = new Pose2d(-44,12,Math.toRadians(180));
+    Pose2d rightPrimaryPose = new Pose2d(-27.5, 8.5, Math.toRadians(315));
+    Pose2d rightStackPose = new Pose2d(-58,12, Math.toRadians(180));
+    Pose2d rightMiddlePose = new Pose2d(-40,12,Math.toRadians(180));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,7 +64,7 @@ public class SplineCycleRight extends LinearOpMode {
                 .setReversed(false)
                 .build();
 
-        TrajectorySequence fromStackTraj = drive.trajectorySequenceBuilder(rightStackPose)
+        TrajectorySequence fromStackTraj = drive.trajectorySequenceBuilder(rightStackPose.minus(new Pose2d(-6,0,0)))
                 .splineToLinearHeading(rightMiddlePose, Math.toRadians(0))
                 .splineToSplineHeading(rightPrimaryPose, Math.toRadians(315))
                 .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> {
@@ -72,32 +74,56 @@ public class SplineCycleRight extends LinearOpMode {
 
         TrajectorySequence primaryPark1 = drive.trajectorySequenceBuilder(rightPrimaryPose)
                 .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
                 .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
                 .strafeLeft(30)
                 .build(); //Park location 1 from primary pose
 
         TrajectorySequence primaryPark2 = drive.trajectorySequenceBuilder(rightPrimaryPose)
                 .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
                 .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
                 .strafeLeft(5)
                 .build(); //Park location 2 from primary pose
 
         TrajectorySequence primaryPark3 = drive.trajectorySequenceBuilder(rightPrimaryPose)
                 .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
                 .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
                 .strafeRight(16)
                 .build(); //Park location 3 from primary pose
 
         TrajectorySequence secondaryPark1 = drive.trajectorySequenceBuilder(rightStackPose)
-
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
+                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeLeft(30)
                 .build(); //Park location 1 from stack pose
 
         TrajectorySequence secondaryPark2 = drive.trajectorySequenceBuilder(rightStackPose)
-
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
+                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeLeft(5)
                 .build(); //Park location 2 from stack pose
 
         TrajectorySequence secondaryPark3 = drive.trajectorySequenceBuilder(rightStackPose)
-
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> {
+                    slideLevel = 0;
+                })
+                .splineToSplineHeading(new Pose2d(-40,12,Math.toRadians(270)), Math.toRadians(180))
+                .strafeRight(16)
                 .build(); //Park location 3 from stack pose
 
         drive.setPoseEstimate(rightStartPose);
@@ -137,7 +163,7 @@ public class SplineCycleRight extends LinearOpMode {
                     break;
 
                 case REPEAT:
-                    if (autoTimer.seconds() < 22) {
+                    if (autoTimer.seconds() < 25 && stackHeight > 0) {
                         drive.followTrajectorySequenceAsync(toStackTraj);
                         state = State.TO_STACK;
                     }
@@ -147,9 +173,9 @@ public class SplineCycleRight extends LinearOpMode {
                     break;
 
                 case TO_STACK:
-                    if (drive.isBusy()) {
+                    if (!drive.isBusy()) {
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.65) {
                             slide.autoVSlide(stackHeight-1);
                         }
 
@@ -160,7 +186,7 @@ public class SplineCycleRight extends LinearOpMode {
 
                         sleepTimer.reset();
                         while (sleepTimer.seconds() < 0.2) {
-                            drive.setMotorPowers(-0.2,-0.2,-0.2,-0.2);
+                            drive.setMotorPowers(-0.25,-0.25,-0.25,-0.25);
                             drive.update();
                         }
                         drive.setMotorPowers(0,0,0,0);
@@ -172,12 +198,12 @@ public class SplineCycleRight extends LinearOpMode {
                         slideLevel = 10;
                         stackHeight -=2;
 
-                        if (autoTimer.seconds() < 22) {
+                        if (autoTimer.seconds() < 25) {
                             drive.followTrajectorySequenceAsync(fromStackTraj);
                             state = State.FROM_STACK;
                         }
                         else {
-                            state = State.PRIMARY_PARK;
+                            state = State.SECONDARY_PARK;
                         }
                     }
                     break;
@@ -205,7 +231,6 @@ public class SplineCycleRight extends LinearOpMode {
                     else {
                         drive.followTrajectorySequenceAsync(primaryPark3);
                     }
-                    slideLevel = 0;
                     state = State.IDLE;
                     break;
 
@@ -219,7 +244,6 @@ public class SplineCycleRight extends LinearOpMode {
                     else {
                         drive.followTrajectorySequenceAsync(secondaryPark3);
                     }
-                    slideLevel = 0;
                     state = State.IDLE;
                     break;
             }
