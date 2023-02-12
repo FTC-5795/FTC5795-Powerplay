@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
+package org.firstinspires.ftc.teamcode.otherCode.archive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -6,12 +6,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.otherCode.drive.SampleMecanumDrive;
 
+@Disabled
 //cone upright arm controls (be sure to start bot with servo fully upright)
 public class coneServoController {
 
     private Servo coneServo;
     private boolean armUp, spamLock, spamLock2;
-    //SampleMecanumDrive drive = new SampleMecanumDrive(HardwareMap);
     private double reversePower = 0.5;
 
     public coneServoController(HardwareMap hardwareMap) {

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpenCV;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.otherCode.trajectorysequence.TrajectorySeq
 //REPEAT_1 -> REPEAT_2 -> Score Routine (if enough time)
 //or REPEAT_1 -> Park at end
 
+@Disabled
 @Autonomous
 public class StrafeCycleLeft extends LinearOpMode {
 

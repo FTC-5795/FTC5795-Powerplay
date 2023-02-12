@@ -21,12 +21,15 @@ Includes adjustments to deal with drifting issues due to motors/weight (calibrat
 
 Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTeleOp):
     Controller 1 (Driver):
+        -Rumbles when close to stack, Hold y until rumbling stops to align //TODO: Tuning
         -Left stick for movement (with sqrt precision code)
         -Right stick for turn (without sqrt precision code)
         -Left bumper hold for drift (Bot continues moving in direction originally facing when button pressed regardless of orientation)
         -Right bumper hold halves speed for precision
         -D-Pad left/right sets bot to 90 degree locked positions relative to bot starting pose //TODO: Tuning
+        -Hold Y button for automatic alignment to cones/stacks and poles with cones //TODO: Tuning
     Controller 2 (Slides):
+        -Rumbles when stack/cone/pole is aligned with grabber //TODO: Tuning
         -D-Pad down moves slides down when at scoring heights (10-12) and "up" grab positions (1,3,5,7,9)
         -D-Pad up moves slides up when at scoring heights (10-12) and sets slides to low pole (10) otherwise
         -Right bumper sets slides to "up" grab position (9) preparing for a 5-stack of cones
@@ -36,19 +39,22 @@ Deluxe Tele-Op Controls (Mostly combined in controller one for oneControllerTele
         -A button sets slides to "up" grab position (1) preparing for a 1-stack of cones
         -Left bumper toggles the grip servo
         -Automatically opens grabber when going down for cone and closes when coming back up
-        -Left and Right Analog Buttons combined reset the slides (overrides to level 0 as well) //TODO: Tuning
+        -Left and Right Analog Buttons combined reset the slides (overrides to level 0 as well)
         -Holding left trigger reduces slide height relative to depth
         -Holding right trigger increases slide height relative to depth
 
 Autonomous:
+    April Tags:
+    -Camera has been adjusted and integrated, works with tags 17/18/19 for parking
+
     Odometry:
     -All functions tuned with three dead wheel tracking
     Roadrunner:
     -Finite State Machine
-    -Camera EXA left/right tuned for parking
-    -Basic cycle autos for left and right
+    -parkingAuto for 20-point April Tag parking
+    -Spline cycles 1+3 with parking on left/right //TODO: Tuning
 
 Other function classes:
-    -coneServoController (only tele-Op)
     -gripServoController (both tele-Op and auto)
     -vSlideMotorController (both tele-Op and auto)
+    -alignmentSensing (both tele-Op and auto) //TODO: Tuning

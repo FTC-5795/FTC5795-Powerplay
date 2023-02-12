@@ -34,8 +34,8 @@ public class SplineCycleRight extends LinearOpMode {
     State state = State.IDLE;
 
     Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270)); //center of square
-    Pose2d rightPrimaryPose = new Pose2d(-27.5, 8.5, Math.toRadians(315));
-    Pose2d rightStackPose = new Pose2d(-58,12, Math.toRadians(180));
+    Pose2d rightPrimaryPose = new Pose2d(-28.25, 6.25, Math.toRadians(315));
+    Pose2d rightStackPose = new Pose2d(-59.75,11.3, Math.toRadians(180));
     Pose2d rightMiddlePose = new Pose2d(-40,12,Math.toRadians(180));
 
     @Override
@@ -155,7 +155,7 @@ public class SplineCycleRight extends LinearOpMode {
                         while (sleepTimer.seconds() < 0.5) {
                         } //time for pole to stabilize
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.4) {
                             grab.autoGrip(false);
                         }
                         state = State.REPEAT;
@@ -175,18 +175,18 @@ public class SplineCycleRight extends LinearOpMode {
                 case TO_STACK:
                     if (!drive.isBusy()) {
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.65) {
+                        while (sleepTimer.seconds() < 0.5) {
                             slide.autoVSlide(stackHeight-1);
                         }
 
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.4) {
                             grab.autoGrip(true);
                         }
 
                         sleepTimer.reset();
                         while (sleepTimer.seconds() < 0.2) {
-                            drive.setMotorPowers(-0.25,-0.25,-0.25,-0.25);
+                            drive.setMotorPowers(-0.2,-0.2,-0.2,-0.2);
                             drive.update();
                         }
                         drive.setMotorPowers(0,0,0,0);
@@ -211,10 +211,10 @@ public class SplineCycleRight extends LinearOpMode {
                 case FROM_STACK:
                     if (!drive.isBusy()) {
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.4) {
                         } //time for pole to stabilize
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.4) {
                             grab.autoGrip(false);
                         }
                         state = State.REPEAT;

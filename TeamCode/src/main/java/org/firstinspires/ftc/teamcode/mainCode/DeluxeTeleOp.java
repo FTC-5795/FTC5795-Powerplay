@@ -7,10 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.otherCode.diagnostics.botLock;
-import org.firstinspires.ftc.teamcode.mainCode.functionClasses.coneServoController;
+import org.firstinspires.ftc.teamcode.mainCode.functionClasses.alignmentSensing;
+import org.firstinspires.ftc.teamcode.otherCode.archive.coneServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.gripServoController;
 import org.firstinspires.ftc.teamcode.mainCode.functionClasses.vSlideMotorController;
 
@@ -67,6 +68,7 @@ public class DeluxeTeleOp extends LinearOpMode {
         coneServoController coneServo = new coneServoController(hardwareMap);
         gripServoController gripServo = new gripServoController(hardwareMap);
         vSlideMotorController vSlideMotor = new vSlideMotorController(hardwareMap);
+        alignmentSensing sensing = new alignmentSensing(hardwareMap);
 
         //Motor assignment
         fL = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -143,8 +145,6 @@ public class DeluxeTeleOp extends LinearOpMode {
             vSlideMotor.vSlide(gamepad2.dpad_up, gamepad2.dpad_down, levelIndicator,
                     slideReset, gamepad2.left_trigger, gamepad2.right_trigger);
 
-            //drive train methods
-
             ninetyDegreeController();
 
             //Bot Drift Issues (Not NFS Drifting)
@@ -160,7 +160,7 @@ public class DeluxeTeleOp extends LinearOpMode {
             bLPower /= denominator;
             bRPower /= denominator;
 
-            //Slow mode
+            //Slow mode (toggle)
             if (gamepad1.right_bumper && !spamLock1) {
                 spamLock1 = true;
                 slowMode = !slowMode;
@@ -182,10 +182,32 @@ public class DeluxeTeleOp extends LinearOpMode {
             bLPower *= practiceCoefficient;
             bRPower *= practiceCoefficient;
 
+            if (gamepad1.y) {
+                fLPower = sensing.alignment();
+                fRPower = sensing.alignment();
+                bLPower = sensing.alignment();
+                bRPower = sensing.alignment();
+            }
+
             fL.setPower(fLPower);
             fR.setPower(fRPower);
             bL.setPower(bLPower);
             bR.setPower(bRPower);
+
+            //Rumble sense in controllers
+            if (sensing.rumbleSense1()) {
+                gamepad1.rumble(0.5,0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
+            }
+            else {
+                gamepad1.stopRumble();
+            }
+
+            if (sensing.rumbleSense2()) {
+                gamepad2.rumble(0.5,0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
+            }
+            else {
+                gamepad2.stopRumble();
+            }
 
             //telemetry outputs
             telemetry.addData("targetAngle", targetAngle);
@@ -335,16 +357,17 @@ public class DeluxeTeleOp extends LinearOpMode {
         }
     }
 
+    //Activates slide reset
     public void slideReset() {
         if (gamepad2.left_stick_button && gamepad2.right_stick_button) {
             slideReset = true;
+            fR.setPower(0);
+            fL.setPower(0);
+            bR.setPower(0);
+            bL.setPower(0);
         }
         else {
             slideReset = false;
         }
-    }
-
-    public void auto() {
-
     }
 }

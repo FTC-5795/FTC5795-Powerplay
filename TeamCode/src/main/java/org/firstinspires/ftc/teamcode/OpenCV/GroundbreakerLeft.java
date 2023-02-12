@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.OpenCV;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Disabled
+@Autonomous
 public class GroundbreakerLeft extends LinearOpMode {
 
     private ElapsedTime autoTimer = new ElapsedTime();
