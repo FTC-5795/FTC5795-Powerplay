@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //Vertical slide motor controls (Using PID) (Start slides retracted with tension on both motors)
 //Spool diameter: 2" | PPR: 134.4
 //8 target levels (0,2,4,6,8 = grabPositions (down) | 1,3,5,7,9 = grabPositions (up) | 10-12 = scoring heights)
+@Config
 public class vSlideMotorController {
 
     private DcMotorEx lowerVerticalMotor, upperVerticalMotor;
@@ -30,7 +32,7 @@ public class vSlideMotorController {
     //For PID
     private double previousError1 = 0, error1 = 0, integralSum1, derivative1;
     private double previousError2 = 0, error2 = 0, integralSum2, derivative2;
-    private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
+    private double Kp = 0.006, Kd = 0, Ki = 0; //Don't use Ki
     private double acceptableError = 15; //Ticks of acceptableError +/- in slide positions
     private int grab = 0; //0 is neutral, 1 is grab, 2 is release
 

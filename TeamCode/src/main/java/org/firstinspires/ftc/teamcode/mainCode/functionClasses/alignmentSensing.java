@@ -1,20 +1,23 @@
 package org.firstinspires.ftc.teamcode.mainCode.functionClasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Config
 public class alignmentSensing {
 
     private DistanceSensor dSensor;
 
     //For PID
     private double previousError = 0, error = 0, integralSum, derivative;
-    private double Kp = 0.0045, Kd = 0, Ki = 0; //Don't use Ki
+    public static double Kp = 0.005, Kd = 0.002, Ki = 0; //Don't use Ki
     private double acceptableError = 15; //Ticks of acceptableError +/- in slide positions
-    private ElapsedTime timer;
+    private ElapsedTime timer = new ElapsedTime();
 
     public alignmentSensing(HardwareMap hardwareMap) {
         dSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
@@ -57,6 +60,6 @@ public class alignmentSensing {
         timer.reset();
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
 
-        return output;
+        return -output;
     }
 }

@@ -43,8 +43,8 @@ public class DeluxeTeleOp extends LinearOpMode {
 
     //PID variables
     private double integralSum = 0, derivative, error = 0, previousError; //for PID control (dynamic)
-    public static double Kp = 2.5; //Proportional Gain (for more power)
-    public static double Kd = 1; //Derivative Gain (increase to prevent overshoot)
+    public static double Kp = 1.8; //Proportional Gain (for more power)
+    public static double Kd = 0; //Derivative Gain (increase to prevent overshoot)
     public static double Ki = 0; //Integral Gain (steady state error)
 
     private ElapsedTime timer = new ElapsedTime();
@@ -194,18 +194,13 @@ public class DeluxeTeleOp extends LinearOpMode {
             bL.setPower(bLPower);
             bR.setPower(bRPower);
 
-            //Rumble sense in controllers
-            if (sensing.rumbleSense1()) {
-                gamepad1.rumble(0.5,0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
-            }
-            else {
-                gamepad1.stopRumble();
-            }
-
+            //Rumble sense in controllers, Rumbles when cone in range
             if (sensing.rumbleSense2()) {
+                gamepad1.rumble(0.5,0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
                 gamepad2.rumble(0.5,0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
             }
             else {
+                gamepad1.stopRumble();
                 gamepad2.stopRumble();
             }
 
@@ -234,6 +229,9 @@ public class DeluxeTeleOp extends LinearOpMode {
 
         if (gamepad1.dpad_left || gamepad1.dpad_right) {
             positionalRotationMode = true;
+            timer.reset(); //Prevents build up with integral PID control
+            integralSum = 0; //Prevents overlap with integral PID control
+            timer2.reset(); //Turn controller safety (2 seconds)
         }
 
         if (acceptableError >= orientation || orientation >= 360-acceptableError) {
