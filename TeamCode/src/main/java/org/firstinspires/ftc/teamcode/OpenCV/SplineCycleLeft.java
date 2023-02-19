@@ -33,10 +33,10 @@ public class SplineCycleLeft extends LinearOpMode {
 
     State state = State.IDLE;
 
-    Pose2d leftStartPose = new Pose2d(30, 61.5, Math.toRadians(270)); //center of square
-    Pose2d leftPrimaryPose = new Pose2d(26, 8.5, Math.toRadians(225));
-    Pose2d leftStackPose = new Pose2d(58,12, Math.toRadians(0));
-    Pose2d leftMiddlePose = new Pose2d(40,12,Math.toRadians(0));
+    Pose2d leftStartPose = new Pose2d(39.4, 61.5, Math.toRadians(270)); //center of square
+    Pose2d leftPrimaryPose = new Pose2d(28.5, 5, Math.toRadians(225));
+    Pose2d leftStackPose = new Pose2d(60.35,14.5, Math.toRadians(0));
+    Pose2d leftMiddlePose = new Pose2d(40,14,Math.toRadians(0));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -46,7 +46,7 @@ public class SplineCycleLeft extends LinearOpMode {
         cameraController vision = new cameraController(hardwareMap);
 
         TrajectorySequence initialTraj = drive.trajectorySequenceBuilder(leftStartPose)
-                .splineToConstantHeading(new Vector2d(35, 55), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(33, 55), Math.toRadians(270))
                 .forward(27.5)
                 .splineToSplineHeading(leftPrimaryPose, Math.toRadians(225))
                 .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> {
@@ -153,9 +153,10 @@ public class SplineCycleLeft extends LinearOpMode {
                     if (!drive.isBusy()) {
                         sleepTimer.reset();
                         while (sleepTimer.seconds() < 0.5) {
+                            slide.autoVSlide(slideLevel);
                         } //time for pole to stabilize
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.25) {
                             grab.autoGrip(false);
                         }
                         state = State.REPEAT;
@@ -214,7 +215,7 @@ public class SplineCycleLeft extends LinearOpMode {
                         while (sleepTimer.seconds() < 0.5) {
                         } //time for pole to stabilize
                         sleepTimer.reset();
-                        while (sleepTimer.seconds() < 0.5) {
+                        while (sleepTimer.seconds() < 0.25) {
                             grab.autoGrip(false);
                         }
                         state = State.REPEAT;
@@ -231,7 +232,6 @@ public class SplineCycleLeft extends LinearOpMode {
                     else {
                         drive.followTrajectorySequenceAsync(primaryPark3);
                     }
-                    slideLevel = 0;
                     state = State.IDLE;
                     break;
 
@@ -245,7 +245,6 @@ public class SplineCycleLeft extends LinearOpMode {
                     else {
                         drive.followTrajectorySequenceAsync(secondaryPark3);
                     }
-                    slideLevel = 0;
                     state = State.IDLE;
                     break;
             }

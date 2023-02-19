@@ -34,7 +34,7 @@ public class parkingAuto extends LinearOpMode {
     State state = State.IDLE;
 
     Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270)); //inner side of square
-    Pose2d rightPrimaryPose = new Pose2d(-29, 5, Math.toRadians(315));
+    Pose2d rightPrimaryPose = new Pose2d(-34, 5, Math.toRadians(225));
     Pose2d rightStackPose = new Pose2d(-60, 14.5, Math.toRadians(180));
     Pose2d rightMiddlePose = new Pose2d(-40, 14, Math.toRadians(180));
 
