@@ -16,7 +16,7 @@ public class MeepMeepEngine2 {
         double poleDepth = 2;
 
         Pose2d rightStartPose = new Pose2d(-30, 61.5, Math.toRadians(270));
-
+// haha funny lol i hope this works
         Pose2d rightPrimaryPose = new Pose2d(-29, 5.75, Math.toRadians(-45));
         Vector2d rightMiddlePose2 = new Vector2d(-40, 12);
         Pose2d rightMiddlePose = new Pose2d(-40, 12, Math.toRadians(180));
