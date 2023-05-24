@@ -55,6 +55,11 @@ public class MeepMeepEngine2 {
                 .setBackgroundAlpha(0.95f)
                 .addEntity(rightCycle)
                 .start();
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
+                .setDarkMode(true)
+                .setBackgroundAlpha(0.95f)
+                .addEntity(rightCycle)
+                .start();
     }
 }
 //    RoadRunnerBotEntity rightCycle = new DefaultBotBuilder(meepMeep)
